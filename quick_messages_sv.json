@@ -1,0 +1,324 @@
+{
+  "categories": {
+    "hem_och_vardag": {
+      "title": "Hem & vardag",
+      "messages": [
+        {
+          "id": "hv_1",
+          "title": "Hyresökning",
+          "content": "Jag motsätter mig den föreslagna hyresökningen på [PROCENT]%. Jag begär omprövning enligt hyreslagen."
+        },
+        {
+          "id": "hv_2",
+          "title": "Reparation av lägenhet",
+          "content": "Jag anmäler följande skador i min lägenhet som kräver reparation: [BESKRIVNING]. När kan detta åtgärdas?"
+        },
+        {
+          "id": "hv_3",
+          "title": "Buskehållning",
+          "content": "Jag ber om att få utföra följande buskehållningsarbete i min lägenhet: [ARBETE]. Är detta tillåtet?"
+        },
+        {
+          "id": "hv_4",
+          "title": "Husdjur i lägenhet",
+          "content": "Jag önskar att hålla ett husdjur i min lägenhet. Vilka regler gäller? Behöver jag tillstånd?"
+        },
+        {
+          "id": "hv_5",
+          "title": "Andrahandsuthyrning",
+          "content": "Jag önskar att hyra ut min lägenhet på andrahand. Vilka villkor gäller enligt hyresavtalet?"
+        },
+        {
+          "id": "hv_6",
+          "title": "Gemensamma kostnader",
+          "content": "Jag ifrågasätter beräkningen av gemensamma kostnader för [MÅNAD]. Kan jag få en detaljerad specifikation?"
+        },
+        {
+          "id": "hv_7",
+          "title": "Bullerstörning",
+          "content": "Jag drabbas av bullerstörning från [KÄLLA]. Detta sker regelbundet. Kan något göras åt detta?"
+        },
+        {
+          "id": "hv_8",
+          "title": "Vatten- eller värmeproblem",
+          "content": "Jag har problem med [VATTEN/VÄRME] i min lägenhet. Detta påverkar min möjlighet att bo här. Kan detta åtgärdas omedelbar?"
+        },
+        {
+          "id": "hv_9",
+          "title": "Parkeringsplats",
+          "content": "Jag behöver en parkeringsplats. Vilka är villkoren och kostnaden för detta?"
+        },
+        {
+          "id": "hv_10",
+          "title": "Gemensamma utrymmen",
+          "content": "Jag önskar att boka följande gemensamt utrymme: [UTRYMME] för [DATUM]. Hur går jag tillväga?"
+        },
+        {
+          "id": "hv_11",
+          "title": "Mögelskador",
+          "content": "Jag har upptäckt mögelskador i min lägenhet. Detta är en hälsorisk. Kan detta åtgärdas omedelbar?"
+        },
+        {
+          "id": "hv_12",
+          "title": "Fönster och dörrar",
+          "content": "Fönstren/dörrarna i min lägenhet är i dåligt skick. Kan dessa bytas eller repareras?"
+        },
+        {
+          "id": "hv_13",
+          "title": "Avfallshantering",
+          "content": "Jag har frågor om avfallshanteringen i fastigheten. Vilka regler gäller för sortering och bortskaffning?"
+        },
+        {
+          "id": "hv_14",
+          "title": "Trapphusvård",
+          "content": "Jag önskar att göra följande förbättringar i trapphuset: [FÖRBÄTTRING]. Är detta möjligt?"
+        },
+        {
+          "id": "hv_15",
+          "title": "Flyttning",
+          "content": "Jag planerar att flytta från min lägenhet på [DATUM]. Vilka är procedurerna för detta?"
+        }
+      ]
+    },
+    "vanner_och_familj": {
+      "title": "Vänner & familj",
+      "messages": [
+        {
+          "id": "vf_1",
+          "title": "Barnbidrag",
+          "content": "Jag ansöker om barnbidrag för mitt barn. Vilka handlingar behöver jag bifoga?"
+        },
+        {
+          "id": "vf_2",
+          "title": "Vårdnad",
+          "content": "Jag önskar att diskutera frågor om vårdnaden av mitt barn. Kan vi boka ett möte?"
+        },
+        {
+          "id": "vf_3",
+          "title": "Underhållsbidrag",
+          "content": "Jag behöver information om underhållsbidrag för mitt barn. Vilka är villkoren?"
+        },
+        {
+          "id": "vf_4",
+          "title": "Adoption",
+          "content": "Jag är intresserad av att adoptera ett barn. Vilka är kraven och procedurerna?"
+        },
+        {
+          "id": "vf_5",
+          "title": "Försäljning av bostad",
+          "content": "Min familj önskar att sälja vår bostad. Vilka är de juridiska stegen?"
+        },
+        {
+          "id": "vf_6",
+          "title": "Arv och testamente",
+          "content": "Jag behöver hjälp med att upprätta ett testamente. Vilka är procedurerna?"
+        },
+        {
+          "id": "vf_7",
+          "title": "Äktenskapsskillnad",
+          "content": "Jag önskar att diskutera möjligheten till äktenskapsskillnad. Kan jag få information om procedurerna?"
+        },
+        {
+          "id": "vf_8",
+          "title": "Bodelning",
+          "content": "Min familj behöver hjälp med bodelning efter ett dödsfall. Vilka är procedurerna?"
+        },
+        {
+          "id": "vf_9",
+          "title": "Försörjningsplikt",
+          "content": "Jag har frågor om försörjningsplikten gentemot mina föräldrar. Vilka är reglerna?"
+        },
+        {
+          "id": "vf_10",
+          "title": "Familjerätt",
+          "content": "Jag behöver juridisk rådgivning i en familjerättslig fråga. Kan jag få ett möte?"
+        },
+        {
+          "id": "vf_11",
+          "title": "Umgängesrätt",
+          "content": "Jag önskar att diskutera umgängesrätten med mitt barn. Vilka är möjligheterna?"
+        },
+        {
+          "id": "vf_12",
+          "title": "Samboavtal",
+          "content": "Min partner och jag önskar att upprätta ett samboavtal. Vilka är procedurerna?"
+        },
+        {
+          "id": "vf_13",
+          "title": "Äldrevård",
+          "content": "Min äldre familjemedlem behöver vård. Vilka är möjligheterna och kostnaderna?"
+        },
+        {
+          "id": "vf_14",
+          "title": "Försäljning av arv",
+          "content": "Jag önskar att sälja min andel av ett arv. Vilka är procedurerna?"
+        },
+        {
+          "id": "vf_15",
+          "title": "Gåva mellan familjemedlemmar",
+          "content": "Jag önskar att ge en gåva till en familjemedlem. Vilka skatteregler gäller?"
+        }
+      ]
+    },
+    "relationer": {
+      "title": "Relationer",
+      "messages": [
+        {
+          "id": "rel_1",
+          "title": "Skilsmässa",
+          "content": "Jag önskar att starta skilsmässoprocessen. Vilka är stegen och vad kostar det?"
+        },
+        {
+          "id": "rel_2",
+          "title": "Äktenskapslöfte",
+          "content": "Jag önskar att registrera mitt äktenskapslöfte. Vilka är procedurerna?"
+        },
+        {
+          "id": "rel_3",
+          "title": "Samboförhållande",
+          "content": "Jag lever i ett samboförhållande. Vilka är mina juridiska rättigheter?"
+        },
+        {
+          "id": "rel_4",
+          "title": "Äktenskapsskillnad med barn",
+          "content": "Jag önskar äktenskapsskillnad men vi har gemensamma barn. Vilka är procedurerna?"
+        },
+        {
+          "id": "rel_5",
+          "title": "Hemskillnad",
+          "content": "Jag önskar hemskillnad från min make/maka. Vilka är villkoren?"
+        },
+        {
+          "id": "rel_6",
+          "title": "Bodelning vid skilsmässa",
+          "content": "Vi måste dela vår gemensamma egendom. Vilka är reglerna för detta?"
+        },
+        {
+          "id": "rel_7",
+          "title": "Underhållsbidrag vid skilsmässa",
+          "content": "Jag behöver information om underhållsbidrag efter skilsmässa. Vilka är villkoren?"
+        },
+        {
+          "id": "rel_8",
+          "title": "Äktenskapsgåva",
+          "content": "Jag önskar att göra en äktenskapsgåva. Vilka är de juridiska konsekvenserna?"
+        },
+        {
+          "id": "rel_9",
+          "title": "Äktenskapskontakt",
+          "content": "Jag önskar att kontakta min tidigare make/maka angående juridiska frågor. Hur går jag tillväga?"
+        },
+        {
+          "id": "rel_10",
+          "title": "Äktenskapslöfte",
+          "content": "Jag önskar att upphäva mitt äktenskapslöfte. Vilka är procedurerna?"
+        },
+        {
+          "id": "rel_11",
+          "title": "Äktenskapsbryting",
+          "content": "Jag önskar att bryta mitt äktenskapslöfte. Vilka är villkoren?"
+        },
+        {
+          "id": "rel_12",
+          "title": "Äktenskapspakt",
+          "content": "Min partner och jag önskar att upprätta en äktenskapspakt. Vilka är procedurerna?"
+        },
+        {
+          "id": "rel_13",
+          "title": "Äktenskapsfördel",
+          "content": "Jag önskar att få information om äktenskapsfördel. Vilka är reglerna?"
+        },
+        {
+          "id": "rel_14",
+          "title": "Äktenskapsnämnd",
+          "content": "Jag önskar att kontakta äktenskapsnämnden. Vilka är deras funktioner?"
+        },
+        {
+          "id": "rel_15",
+          "title": "Äktenskapsprövning",
+          "content": "Jag önskar att få min äktenskapsprövning genomförd. Vilka är procedurerna?"
+        }
+      ]
+    },
+    "arbete": {
+      "title": "Arbete",
+      "messages": [
+        {
+          "id": "arb_1",
+          "title": "Arbetslöshetsersättning",
+          "content": "Jag är arbetslös och önskar att ansöka om arbetslöshetsersättning. Vilka är villkoren?"
+        },
+        {
+          "id": "arb_2",
+          "title": "Sjukpenning",
+          "content": "Jag är sjuk och behöver sjukpenning. Vilka är procedurerna för att ansöka?"
+        },
+        {
+          "id": "arb_3",
+          "title": "Föräldrapenning",
+          "content": "Jag önskar att ansöka om föräldrapenning. Vilka är villkoren och hur mycket får jag?"
+        },
+        {
+          "id": "arb_4",
+          "title": "Arbetsmarknadsstöd",
+          "content": "Jag behöver arbetsmarknadsstöd. Vilka är villkoren för detta?"
+        },
+        {
+          "id": "arb_5",
+          "title": "Omställningsersättning",
+          "content": "Jag har blivit uppsagd och önskar omställningsersättning. Vilka är villkoren?"
+        },
+        {
+          "id": "arb_6",
+          "title": "Arbetsskada",
+          "content": "Jag har drabbats av en arbetsskada. Vilka är mina rättigheter och ersättningar?"
+        },
+        {
+          "id": "arb_7",
+          "title": "Yrkessjukdom",
+          "content": "Jag misstänker att jag har en yrkessjukdom. Vilka är procedurerna för att anmäla detta?"
+        },
+        {
+          "id": "arb_8",
+          "title": "Arbetsmiljö",
+          "content": "Jag har problem med arbetsmiljön på min arbetsplats. Vem kan jag kontakta?"
+        },
+        {
+          "id": "arb_9",
+          "title": "Diskriminering på arbetet",
+          "content": "Jag har blivit diskriminerad på min arbetsplats. Vilka är mina rättigheter?"
+        },
+        {
+          "id": "arb_10",
+          "title": "Uppsägning",
+          "content": "Jag har blivit uppsagd. Vilka är mina rättigheter och ersättningar?"
+        },
+        {
+          "id": "arb_11",
+          "title": "Arbetskontakt",
+          "content": "Jag har frågor om mitt arbetskontakt. Kan jag få en förklaring?"
+        },
+        {
+          "id": "arb_12",
+          "title": "Lön och lönesamtal",
+          "content": "Jag önskar att diskutera min lön med min arbetsgivare. Hur går jag tillväga?"
+        },
+        {
+          "id": "arb_13",
+          "title": "Övertid",
+          "content": "Jag arbetar mycket övertid. Vilka är reglerna för ersättning för övertid?"
+        },
+        {
+          "id": "arb_14",
+          "title": "Semesterrätt",
+          "content": "Jag har frågor om min semesterrätt. Vilka är reglerna?"
+        },
+        {
+          "id": "arb_15",
+          "title": "Arbetslöshetsförsäkring",
+          "content": "Jag önskar att ansluta mig till en arbetslöshetsförsäkring. Vilka är procedurerna?"
+        }
+      ]
+    }
+  }
+}
