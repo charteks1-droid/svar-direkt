@@ -1,4 +1,4 @@
-export default {
+export default ({ config }) => ({
   expo: {
     name: "svardirekt",
     slug: "svardirekt",
@@ -8,7 +8,6 @@ export default {
       package: "com.svardirekt.app"
     }
   }
-};
-
+});
    
 
