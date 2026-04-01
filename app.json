@@ -6,6 +6,11 @@
     "orientation": "portrait",
     "android": {
       "package": "com.svardirekt.app"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "93cb9c4c-7d18-4f06-b846-f564ad9bf56c"
+      }
     }
   }
 }
