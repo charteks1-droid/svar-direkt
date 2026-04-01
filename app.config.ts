@@ -3,7 +3,10 @@ export default {
     name: "svardirekt",
     slug: "svardirekt",
     version: "1.0.0",
-    orientation: "portrait"
+    orientation: "portrait",
+    android: {
+      package: "com.svardirekt.app"
+    }
   }
 };
 
