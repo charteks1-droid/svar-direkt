@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 
-import { categories } from "@/data/scenarios";
+import { categories } from "../data/scenarios";
 
 const ScreenContainer = View;
 
