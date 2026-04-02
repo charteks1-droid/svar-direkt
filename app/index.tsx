@@ -10,14 +10,21 @@ import {
   View,
 } from "react-native";
 
-import { useColors } from "@/hooks/use-colors";
+
 import { categories } from "@/data/scenarios";
 
 const ScreenContainer = View;
 
 export default function HomeScreen() {
   const router = useRouter();
-  const colors = useColors();
+  const colors = {
+  primary: "#2563eb",
+  background: "#ffffff",
+  surface: "#f5f5f5",
+  border: "#e5e5e5",
+  foreground: "#111111",
+  muted: "#666666",
+};
 
   const handleCategoryPress = (categoryId: string) => {
     if (Platform.OS !== "web") {
