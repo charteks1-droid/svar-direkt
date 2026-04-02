@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { View as ScreenContainer } from "react-native";
-import { useColors } from "@/hooks/use-colors";
+
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories } from "@/data/scenarios";
 import * as Haptics from "expo-haptics";
@@ -8,7 +8,7 @@ import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-n
 
 export default function HomeScreen() {
   const router = useRouter();
-  const colors = useColors();
+  const colors = {};
 
   const handleCategoryPress = (categoryId: string) => {
     if (Platform.OS !== "web") {
