@@ -2,9 +2,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories } from "@/data/scenarios";
-import * as Haptics from "expo-haptics";
-import type { Scenario } from "@/data/scenarios";
-import { useState } from "react";
 import { useSearch, useFavorites, useCopyHistory } from "@/hooks/use-pro-features-v2";
 import { Platform, Text, View, Pressable, FlatList, StyleSheet, TextInput, ScrollView } from "react-native";
 
