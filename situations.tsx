@@ -1,29 +1,44 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScreenContainer } from "@/components/screen-container";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { categories } from "@/data/scenarios";
+import * as Haptics from "expo-haptics";
+import { categories, type Scenario } from "@/data/scenarios";
 import { useSearch, useFavorites, useCopyHistory } from "@/hooks/use-pro-features-v2";
-import { Platform, Text, View, Pressable, FlatList, StyleSheet, TextInput, ScrollView } from "react-native";
+import { useColors } from "@/hooks/use-colors";
+import {
+  Platform,
+  Text,
+  View,
+  Pressable,
+  FlatList,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+} from "react-native";
+
+const ScreenContainer = View;
 
 export default function SituationsScreen() {
   const isPro = true;
+  const colors = useColors();
+  const router = useRouter();
   const { categoryId } = useLocalSearchParams() as { categoryId?: string };
 
-if (!categoryId) return null;
+  if (!categoryId) return null;
 
-const category = categories?.find((c) => c.id === categoryId);
+  const category = categories?.find((c) => c.id === categoryId);
 
-if (!category) return null;
+  if (!category) return null;
 
-const router = useRouter();
+  const scenarios = category.scenarios ?? [];
+  const { searchQuery, setSearchQuery, filteredTemplates } = useSearch(scenarios);
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { addToHistory } = useCopyHistory();
 
-const { searchQuery, setSearchQuery, filteredTemplates } = useSearch(category.scenarios ?? []);
-const { isFavorite, addFavorite, removeFavorite } = useFavorites();
-const { addToHistory } = useCopyHistory();
-      <ScreenContainer className="p-4">
+  if (scenarios.length === 0) {
+    return (
+      <ScreenContainer style={{ flex: 1 }} className="p-4">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 24 }}>
-            {/* Back button */}
             <Pressable
               onPress={() => router.back()}
               style={({ pressed }) => [
@@ -34,13 +49,12 @@ const { addToHistory } = useCopyHistory();
               <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
             </Pressable>
 
-            {/* Icon */}
             <View
               style={{
                 width: 80,
                 height: 80,
                 borderRadius: 40,
-                backgroundColor: colors.primary + "15",
+                backgroundColor: `${colors.primary}15`,
                 justifyContent: "center",
                 alignItems: "center",
                 marginTop: 40,
@@ -49,7 +63,6 @@ const { addToHistory } = useCopyHistory();
               <MaterialIcons name="schedule" size={40} color={colors.primary} />
             </View>
 
-            {/* Title */}
             <Text
               style={{
                 fontSize: 24,
@@ -61,7 +74,6 @@ const { addToHistory } = useCopyHistory();
               Innehåll kommer snart
             </Text>
 
-            {/* Category name */}
             <Text
               style={{
                 fontSize: 18,
@@ -73,7 +85,6 @@ const { addToHistory } = useCopyHistory();
               {category.title}
             </Text>
 
-            {/* Description */}
             <Text
               style={{
                 fontSize: 16,
@@ -82,10 +93,10 @@ const { addToHistory } = useCopyHistory();
                 lineHeight: 24,
               }}
             >
-              Färdiga svar och mallar för denna myndighet läggs till i en kommande uppdatering av appen.
+              Färdiga svar och mallar för denna myndighet läggs till i en kommande uppdatering av
+              appen.
             </Text>
 
-            {/* Additional Info */}
             <View
               style={{
                 backgroundColor: colors.surface,
@@ -94,6 +105,7 @@ const { addToHistory } = useCopyHistory();
                 borderWidth: 1,
                 borderColor: colors.border,
                 gap: 8,
+                width: "100%",
               }}
             >
               <Text
@@ -112,13 +124,11 @@ const { addToHistory } = useCopyHistory();
                   lineHeight: 20,
                 }}
               >
-                • Utforska andra kategorier med färdiga svar{"\n"}
-                • Använd Anteckningsblock för att skriva egna meddelanden{"\n"}
-                • Läs vägledning och ordlista för juridiska begrepp
+                • Utforska andra kategorier med färdiga svar{"\n"}• Använd Anteckningsblock för att
+                skriva egna meddelanden{"\n"}• Läs vägledning och ordlista för juridiska begrepp
               </Text>
             </View>
 
-            {/* Back Button */}
             <Pressable
               onPress={() => router.back()}
               style={({ pressed }) => [
@@ -153,6 +163,7 @@ const { addToHistory } = useCopyHistory();
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
+
     router.push({
       pathname: "/template" as any,
       params: { categoryId: category.id, scenarioId },
@@ -160,25 +171,22 @@ const { addToHistory } = useCopyHistory();
   };
 
   const handleCopy = async (item: Scenario) => {
-    // Copy to clipboard using native API
     try {
-      // For web and native, use a simple approach
-      if (Platform.OS === 'web') {
-        navigator.clipboard.writeText(item.content);
-      } else {
-        // For native, we'll just track in history
-        // Real clipboard copy would need native module
+      if (Platform.OS === "web" && typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(item.content);
       }
     } catch (error) {
-      console.error('Copy error:', error);
+      console.error("Copy error:", error);
     }
+
     await addToHistory({
       templateId: item.id,
-      categoryId: category?.id || '',
+      categoryId: category.id,
       content: item.content,
       title: item.title,
       copiedAt: Date.now(),
     });
+
     if (Platform.OS !== "web") {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     }
@@ -188,8 +196,9 @@ const { addToHistory } = useCopyHistory();
     if (isFavorite(item.id)) {
       await removeFavorite(item.id);
     } else {
-      await addFavorite(category?.id || '', item.id);
+      await addFavorite(category.id, item.id);
     }
+
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -208,14 +217,16 @@ const { addToHistory } = useCopyHistory();
       ]}
     >
       <View style={styles.listItemContent}>
-        <Text style={[styles.listItemTitle, { color: colors.foreground }]}>
-          {item.title}
-        </Text>
-        <Text style={[styles.listItemDescription, { color: colors.muted }]} numberOfLines={2}>
+        <Text style={[styles.listItemTitle, { color: colors.foreground }]}>{item.title}</Text>
+        <Text
+          style={[styles.listItemDescription, { color: colors.muted }]}
+          numberOfLines={2}
+        >
           {item.description}
         </Text>
       </View>
-      <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+
+      <View style={{ flexDirection: "row", gap: 8, alignItems: "center" }}>
         {isPro && (
           <Pressable
             onPress={() => handleToggleFavorite(item)}
@@ -228,6 +239,7 @@ const { addToHistory } = useCopyHistory();
             />
           </Pressable>
         )}
+
         {isPro && (
           <Pressable
             onPress={() => handleCopy(item)}
@@ -236,37 +248,35 @@ const { addToHistory } = useCopyHistory();
             <MaterialIcons name="content-copy" size={20} color={colors.primary} />
           </Pressable>
         )}
+
         <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
       </View>
     </Pressable>
   );
 
   return (
-    <ScreenContainer edges={["top", "left", "right", "bottom"]}>
-      {/* Header */}
+    <ScreenContainer style={{ flex: 1 }}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable
           onPress={() => router.back()}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && { opacity: 0.6 },
-          ]}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
         >
           <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
+
         <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>
-            {category.title}
-          </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
-            Välj din situation
-          </Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>{category.title}</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.muted }]}>Välj din situation</Text>
         </View>
       </View>
 
-      {/* Search Bar (Pro) */}
       {isPro && (
-        <View style={[styles.searchContainer, { borderBottomColor: colors.border, backgroundColor: colors.background }]}>
+        <View
+          style={[
+            styles.searchContainer,
+            { borderBottomColor: colors.border, backgroundColor: colors.background },
+          ]}
+        >
           <MaterialIcons name="search" size={20} color={colors.muted} />
           <TextInput
             style={[styles.searchInput, { color: colors.foreground }]}
@@ -276,16 +286,15 @@ const { addToHistory } = useCopyHistory();
             onChangeText={setSearchQuery}
           />
           {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery('')}>
+            <Pressable onPress={() => setSearchQuery("")}>
               <MaterialIcons name="close" size={20} color={colors.muted} />
             </Pressable>
           )}
         </View>
       )}
 
-      {/* Scenario List */}
       <FlatList
-        data={isPro ? filteredTemplates : category.scenarios}
+        data={isPro ? filteredTemplates : scenarios}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.listContainer}
@@ -293,7 +302,7 @@ const { addToHistory } = useCopyHistory();
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         ListEmptyComponent={
           isPro && searchQuery.length > 0 ? (
-            <View style={{ alignItems: 'center', justifyContent: 'center', paddingVertical: 40 }}>
+            <View style={{ alignItems: "center", justifyContent: "center", paddingVertical: 40 }}>
               <Text style={{ color: colors.muted }}>Inga mallar hittades</Text>
             </View>
           ) : null
@@ -305,8 +314,8 @@ const { addToHistory } = useCopyHistory();
 
 const styles = StyleSheet.create({
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 0.5,
