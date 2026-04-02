@@ -69,33 +69,41 @@ export default function OAuthCallback() {
         // Try to get from local search params first (works with expo-router)
         if (params.code || params.state || params.error) {
           console.log("[OAuth] Found params in route params");
-          // Extract from params
           const urlParams = new URLSearchParams();
+
           if (params.code) urlParams.set("code", params.code);
           if (params.state) urlParams.set("state", params.state);
           if (params.error) urlParams.set("error", params.error);
+
           url = `?${urlParams.toString()}`;
           console.log("[OAuth] Constructed URL from params:", url);
         } else {
           console.log("[OAuth] No params found, checking Linking.getInitialURL()...");
-          // Fallback: try to get from Linking
           const initialUrl = await Linking.getInitialURL();
           console.log("[OAuth] Linking.getInitialURL():", initialUrl);
+
           if (initialUrl) {
             url = initialUrl;
           }
         }
 
         // Check for error
-        const error =
-          params.error || (url ? new URL(url, "http://dummy").searchParams.get("error") : null);
+        let error: string | null = params.error ?? null;
+
+        if (!error && url) {
+          try {
+            error = new URL(url, "http://dummy").searchParams.get("error");
+          } catch {
+            error = null;
+          }
+        }
+
         if (error) {
           console.error("[OAuth] Error parameter found:", error);
           setStatus("error");
-          setErrorMessage(error || "OAuth error occurred");
+          setErrorMessage(error);
           return;
         }
-
         // Check for code and state
         let code: string | null = null;
         let state: string | null = null;
