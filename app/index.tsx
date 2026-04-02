@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ScreenContainer } from "@/components/screen-container";
+import { View as ScreenContainer } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories } from "@/data/scenarios";
