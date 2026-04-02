@@ -2,7 +2,7 @@ export const categories = [
   {
     id: "skatteverket",
     title: "Skatteverket",
-    subtitle: "Skatt",
+    subtitle: "Podatki",
     icon: "account-balance",
     scenarios: [],
   },
