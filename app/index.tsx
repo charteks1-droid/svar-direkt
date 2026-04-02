@@ -1,11 +1,19 @@
 import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
-import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { categories } from "@/data/scenarios";
+
+const ScreenContainer = View;
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -67,6 +75,13 @@ export default function HomeScreen() {
     router.push({ pathname: "/situations", params: { categoryId: "skatteverket" } });
   };
 
+  const handleSharePress = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push("/notepad");
+  };
+
   const handleAboutPress = () => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -88,6 +103,13 @@ export default function HomeScreen() {
     router.push("/notepad");
   };
 
+  const handleCommentsPress = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.push({ pathname: "/situations", params: { categoryId: "skatteverket" } });
+  };
+
   const categoryOrder = [
     "skatteverket",
     "forsakringskassan",
@@ -106,10 +128,12 @@ export default function HomeScreen() {
     .filter(Boolean);
 
   return (
-    <ScreenContainer className="px-6 pt-4 pb-8">
+    <ScreenContainer style={{ flex: 1 }} className="px-6 pt-4 pb-8">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <View className="mb-4 items-center">
-          <Text className="text-3xl font-bold tracking-tight text-primary">Svar Direkt</Text>
+        <View className="items-center mb-4">
+          <Text className="text-3xl font-bold text-primary tracking-tight">
+            Svar Direkt
+          </Text>
         </View>
 
         <View
@@ -136,7 +160,7 @@ export default function HomeScreen() {
                 jurist eller annan professionell rådgivare.{"\n\n"}
                 Syftet är att ge praktisk vägledning och hjälp att formulera meddelanden på ett
                 tydligt och korrekt sätt.{"\n\n"}
-                Observationerna (Väg, Lag, Länk, Ort) är endast observationer och inte juridisk
+                Observationerna (Väg, Lag, Länk, Ort) är ENDAST OBSERVATIONER - INTE juridisk
                 rådgivning. Varje situation är unik. Om du behöver juridisk rådgivning, kontakta en
                 jurist.{"\n\n"}
                 Användaren ansvarar själv för hur informationen används.
@@ -146,7 +170,9 @@ export default function HomeScreen() {
         </View>
 
         <View className="mb-6">
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Myndigheter</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+            Myndigheter
+          </Text>
 
           {sortedCategories.map((category) => (
             <Pressable
@@ -181,10 +207,14 @@ export default function HomeScreen() {
                 >
                   {category!.title}
                 </Text>
-                <Text style={[styles.cardSubtitle, { color: colors.muted }]}>
+                <Text
+                  style={[styles.cardSubtitle, { color: colors.muted }]}
+                >
                   {category!.subtitle}
                 </Text>
-                <Text style={[styles.cardCount, { color: colors.muted }]}>
+                <Text
+                  style={[styles.cardCount, { color: colors.muted }]}
+                >
                   {category!.scenarios?.length ?? 0} färdiga svar
                 </Text>
               </View>
@@ -202,7 +232,9 @@ export default function HomeScreen() {
         <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View className="mb-4">
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Verktyg</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+            Verktyg
+          </Text>
 
           <Pressable
             onPress={handleNotepadPress}
@@ -227,7 +259,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="history" size={18} color={colors.background} />
-            <Text style={[styles.toolButtonText, { color: colors.background }]}>Historik</Text>
+            <Text style={[styles.toolButtonText, { color: colors.background }]}>
+              Historik
+            </Text>
           </Pressable>
 
           <Pressable
@@ -253,12 +287,16 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="message" size={18} color={colors.background} />
-            <Text style={[styles.toolButtonText, { color: colors.background }]}>Snabba svar</Text>
+            <Text style={[styles.toolButtonText, { color: colors.background }]}>
+              Snabba svar
+            </Text>
           </Pressable>
         </View>
 
         <View className="mb-4">
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Pro-funktioner</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+            Pro-funktioner
+          </Text>
 
           <Pressable
             onPress={handleRemindersPress}
@@ -272,7 +310,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="notifications" size={18} color={colors.primary} />
-            <Text style={[styles.proButtonText, { color: colors.primary }]}>Påminnelser</Text>
+            <Text style={[styles.proButtonText, { color: colors.primary }]}>
+              Påminnelser
+            </Text>
           </Pressable>
 
           <Pressable
@@ -287,7 +327,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="description" size={18} color={colors.primary} />
-            <Text style={[styles.proButtonText, { color: colors.primary }]}>Mina mallar</Text>
+            <Text style={[styles.proButtonText, { color: colors.primary }]}>
+              Mina mallar
+            </Text>
           </Pressable>
 
           <Pressable
@@ -302,7 +344,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="search" size={18} color={colors.primary} />
-            <Text style={[styles.proButtonText, { color: colors.primary }]}>Sök mallar</Text>
+            <Text style={[styles.proButtonText, { color: colors.primary }]}>
+              Sok mallar
+            </Text>
           </Pressable>
 
           <Pressable
@@ -317,7 +361,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="favorite" size={18} color={colors.primary} />
-            <Text style={[styles.proButtonText, { color: colors.primary }]}>Favoriter</Text>
+            <Text style={[styles.proButtonText, { color: colors.primary }]}>
+              Favoriter
+            </Text>
           </Pressable>
 
           <Pressable
@@ -332,7 +378,9 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="edit" size={18} color={colors.primary} />
-            <Text style={[styles.proButtonText, { color: colors.primary }]}>Redigera mall</Text>
+            <Text style={[styles.proButtonText, { color: colors.primary }]}>
+              Redigera mall
+            </Text>
           </Pressable>
         </View>
 
@@ -346,17 +394,19 @@ export default function HomeScreen() {
             ]}
           >
             <MaterialIcons name="info-outline" size={18} color={colors.foreground} />
-            <Text style={[styles.toolButtonText, { color: colors.foreground }]}>Om appen</Text>
+            <Text style={[styles.toolButtonText, { color: colors.foreground }]}>
+              Om appen
+            </Text>
           </Pressable>
         </View>
 
-        <View className="mb-4 mt-4 items-center">
-          <Text className="text-center text-xs leading-relaxed text-muted">
+        <View className="items-center mt-4 mb-4">
+          <Text className="text-xs text-muted text-center leading-relaxed">
             Kopiera och skicka professionella svar.{"\n"}Ingen inloggning krävs.
           </Text>
         </View>
 
-        <View className="mt-4 flex-row justify-center gap-3 border-t border-border pt-4">
+        <View className="flex-row justify-center gap-3 mt-4 pt-4 border-t border-border">
           <Pressable
             onPress={() => router.push("/privacy-policy")}
             style={({ pressed }) => [pressed && { opacity: 0.6 }]}
