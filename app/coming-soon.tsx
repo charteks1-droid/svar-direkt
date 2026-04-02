@@ -1,17 +1,35 @@
-import { ScrollView, Text, View, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { MaterialIcons } from "@expo/vector-icons";
-import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
+import { useRouter, useLocalSearchParams } from "expo-router";
+import { View, Text, Pressable, ScrollView } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+
+const ScreenContainer = View;
 
 export default function ComingSoonScreen() {
   const router = useRouter();
-  const colors = useColors();
+  const { categoryId } = useLocalSearchParams();
+
+  const colors = {
+    primary: "#2563eb",
+    background: "#ffffff",
+    surface: "#f5f5f5",
+    border: "#e5e5e5",
+    foreground: "#111111",
+    muted: "#666666",
+  };
 
   return (
-    <ScreenContainer className="p-4">
+    <ScreenContainer style={{ flex: 1, padding: 16 }}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 24 }}>
+          
+          {/* Back */}
+          <Pressable
+            onPress={() => router.back()}
+            style={{ position: "absolute", top: 16, left: 16 }}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
+          </Pressable>
+
           {/* Icon */}
           <View
             style={{
@@ -29,7 +47,7 @@ export default function ComingSoonScreen() {
           {/* Title */}
           <Text
             style={{
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: "600",
               color: colors.foreground,
               textAlign: "center",
@@ -41,70 +59,27 @@ export default function ComingSoonScreen() {
           {/* Description */}
           <Text
             style={{
-              fontSize: 16,
+              fontSize: 14,
               color: colors.muted,
               textAlign: "center",
-              lineHeight: 24,
+              lineHeight: 20,
             }}
           >
-            Färdiga svar och mallar för denna myndighet läggs till i en kommande uppdatering av appen.
+            Den här kategorin är under utveckling och kommer att uppdateras snart.
           </Text>
 
-          {/* Additional Info */}
-          <View
-            style={{
-              backgroundColor: colors.surface,
-              borderRadius: 12,
-              padding: 16,
-              borderWidth: 1,
-              borderColor: colors.border,
-              gap: 8,
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "500",
-                color: colors.foreground,
-              }}
-            >
-              Vad kan du göra nu?
-            </Text>
-            <Text
-              style={{
-                fontSize: 13,
-                color: colors.muted,
-                lineHeight: 20,
-              }}
-            >
-              • Utforska andra kategorier med färdiga svar{"\n"}
-              • Använd Anteckningsblock för att skriva egna meddelanden{"\n"}
-              • Läs vägledning och ordlista för juridiska begrepp
-            </Text>
-          </View>
-
-          {/* Back Button */}
+          {/* Button */}
           <Pressable
             onPress={() => router.back()}
-            style={({ pressed }) => [
-              {
-                paddingHorizontal: 24,
-                paddingVertical: 12,
-                borderRadius: 8,
-                backgroundColor: colors.primary,
-                marginTop: 16,
-              },
-              pressed && { opacity: 0.8, transform: [{ scale: 0.97 }] },
-            ]}
+            style={{
+              marginTop: 16,
+              paddingHorizontal: 20,
+              paddingVertical: 10,
+              backgroundColor: colors.primary,
+              borderRadius: 8,
+            }}
           >
-            <Text
-              style={{
-                color: colors.background,
-                fontSize: 16,
-                fontWeight: "600",
-                textAlign: "center",
-              }}
-            >
+            <Text style={{ color: "#fff", fontWeight: "600" }}>
               Tillbaka
             </Text>
           </Pressable>
