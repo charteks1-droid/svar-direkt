@@ -6,7 +6,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 
 export default function AboutScreen() {
-  const router = useRouter();
+ const router = useRouter();
   const colors = useColors();
 
   const handleBackPress = () => {
