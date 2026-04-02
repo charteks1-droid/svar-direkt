@@ -3,7 +3,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { categories, type Scenario } from "@/data/scenarios";
 import { useSearch, useFavorites, useCopyHistory } from "@/hooks/use-pro-features-v2";
-import { useColors } from "@/hooks/use-colors";
+
 import {
   Platform,
   Text,
@@ -19,7 +19,14 @@ const ScreenContainer = View;
 
 export default function SituationsScreen() {
   const isPro = true;
-  const colors = useColors();
+  const colors = {
+  primary: "#2563eb",
+  background: "#ffffff",
+  surface: "#f5f5f5",
+  border: "#e5e5e5",
+  foreground: "#111111",
+  muted: "#666666",
+};
   const router = useRouter();
   const { categoryId } = useLocalSearchParams() as { categoryId?: string };
 
