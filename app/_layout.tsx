@@ -6,7 +6,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Platform } from "react-native";
-import { ThemeProvider } from "@/lib/theme-provider";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -102,7 +101,7 @@ export default function RootLayout() {
 
   if (shouldOverrideSafeArea) {
     return (
-      <ThemeProvider>
+     
         <SafeAreaProvider initialMetrics={providerInitialMetrics}>
           <SafeAreaFrameContext.Provider value={frame}>
             <SafeAreaInsetsContext.Provider value={insets}>
@@ -115,8 +114,8 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider>
+   
       <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
-    </ThemeProvider>
+   
   );
 }
