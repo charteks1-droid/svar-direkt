@@ -1,6 +1,5 @@
 import { useRouter } from "expo-router";
 import { ScrollView, Text, View, Pressable } from "react-native";
-import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
@@ -18,7 +17,7 @@ export default function AboutScreen() {
   };
 
   return (
-    <ScreenContainer className="bg-background">
+    <View style={{ flex: 1 }}>
       <View className="flex-row items-center justify-between mb-6">
         <Pressable
           onPress={handleBackPress}
@@ -182,6 +181,6 @@ export default function AboutScreen() {
           </View>
         </View>
       </ScrollView>
-    </ScreenContainer>
+    </View>
   );
 }
