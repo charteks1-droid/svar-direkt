@@ -1,6 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories } from "@/data/scenarios";
 import * as Haptics from "expo-haptics";
@@ -10,27 +9,20 @@ import { useSearch, useFavorites, useCopyHistory } from "@/hooks/use-pro-feature
 import { Platform, Text, View, Pressable, FlatList, StyleSheet, TextInput, ScrollView } from "react-native";
 
 export default function SituationsScreen() {
-  const { categoryId } = useLocalSearchParams<{ categoryId: string }>();
-  const router = useRouter();
-  const colors = useColors();
-  const [isPro] = useState(true); // All features free - no paywall
+  const isPro = true;
+  const { categoryId } = useLocalSearchParams() as { categoryId?: string };
 
-  const category = categories.find((c) => c.id === categoryId);
-  const { searchQuery, setSearchQuery, filteredTemplates } = useSearch(category?.scenarios || []);
-  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
-  const { addToHistory } = useCopyHistory();
+if (!categoryId) return null;
 
-  if (!category) {
-    return (
-      <ScreenContainer className="flex-1 items-center justify-center p-6">
-        <Text className="text-foreground text-lg">Kategori hittades inte.</Text>
-      </ScreenContainer>
-    );
-  }
+const category = categories?.find((c) => c.id === categoryId);
 
-  // Show coming soon screen if category has no scenarios
-  if (category.scenarios.length === 0) {
-    return (
+if (!category) return null;
+
+const router = useRouter();
+
+const { searchQuery, setSearchQuery, filteredTemplates } = useSearch(category.scenarios ?? []);
+const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+const { addToHistory } = useCopyHistory();
       <ScreenContainer className="p-4">
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 24 }}>
