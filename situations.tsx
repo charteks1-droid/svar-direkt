@@ -1,7 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
-import { categories, type Scenario } from "@/data/scenarios";
+import { categories } from "../data/scenarios";
 import { useSearch, useFavorites, useCopyHistory } from "@/hooks/use-pro-features-v2";
 
 import {
