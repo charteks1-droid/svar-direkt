@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { View as ScreenContainer } from "react-native";
 
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { categories } from "@/data/scenarios";
+
 import * as Haptics from "expo-haptics";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
@@ -105,8 +105,7 @@ export default function HomeScreen() {
 
   // Reorder categories: Skatteverket, Försäkringskassan, Migrationsverket, Inkasso, Kronofogden
   const categoryOrder = ["skatteverket", "forsakringskassan", "migrationsverket", "inkasso", "kronofogden", "arbetsformedlingen", "socialstyrelsen", "polisen", "domstol", "boverkets"];
-  const sortedCategories = categoryOrder.map(id => categories.find(c => c.id === id)).filter((c): c is typeof categories[0] => c !== undefined);
-
+  const sortedCategories = [];
   return (
     <ScreenContainer className="px-6 pt-4 pb-8" edges={["top", "left", "right", "bottom"]}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
