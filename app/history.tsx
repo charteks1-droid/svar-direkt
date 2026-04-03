@@ -1,15 +1,22 @@
-import { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, Alert, FlatList } from "react-native";
-import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
-import { useMessageHistory } from "@/hooks/use-message-history";
+import { View, Text, Pressable, Alert, FlatList, Platform } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import { Platform } from "react-native";
+import { useMessageHistory } from "@/hooks/use-message-history";
+
+const ScreenContainer = View;
+
+const colors = {
+  primary: "#2563eb",
+  background: "#ffffff",
+  foreground: "#111111",
+  muted: "#666666",
+  border: "#e5e5e5",
+  surface: "#f5f5f5",
+  error: "#dc2626",
+};
 
 export default function HistoryScreen() {
-  const colors = useColors();
   const { history, isLoading, deleteMessage, clearHistory } = useMessageHistory();
 
   const handleCopyMessage = async (text: string) => {
@@ -19,7 +26,7 @@ export default function HistoryScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
       Alert.alert("Kopierat", "Meddelandet har kopierats till urklipp");
-    } catch (error) {
+    } catch {
       Alert.alert("Fel", "Kunde inte kopiera meddelandet");
     }
   };
@@ -48,7 +55,14 @@ export default function HistoryScreen() {
 
   if (isLoading) {
     return (
-      <ScreenContainer className="items-center justify-center">
+      <ScreenContainer
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: colors.background,
+        }}
+      >
         <Text style={{ color: colors.foreground }}>Laddar historia...</Text>
       </ScreenContainer>
     );
@@ -56,7 +70,15 @@ export default function HistoryScreen() {
 
   if (history.length === 0) {
     return (
-      <ScreenContainer className="items-center justify-center p-6">
+      <ScreenContainer
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+          backgroundColor: colors.background,
+        }}
+      >
         <MaterialIcons name="history" size={48} color={colors.muted} />
         <Text
           style={{
@@ -84,20 +106,23 @@ export default function HistoryScreen() {
   }
 
   return (
-    <ScreenContainer className="p-4">
-      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+    <ScreenContainer style={{ flex: 1, padding: 16, backgroundColor: colors.background }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
         <Text style={{ color: colors.foreground, fontSize: 18, fontWeight: "600" }}>
           Meddelandehistoria ({history.length})
         </Text>
+
         {history.length > 0 && (
           <Pressable
             onPress={handleClearAll}
-            style={({ pressed }) => [
-              {
-                padding: 8,
-                opacity: pressed ? 0.6 : 1,
-              },
-            ]}
+            style={({ pressed }) => [{ padding: 8, opacity: pressed ? 0.6 : 1 }]}
           >
             <MaterialIcons name="delete-sweep" size={20} color={colors.error} />
           </Pressable>
@@ -107,7 +132,6 @@ export default function HistoryScreen() {
       <FlatList
         data={history}
         keyExtractor={(item) => item.id}
-        scrollEnabled={false}
         renderItem={({ item }) => (
           <View
             style={{
@@ -119,7 +143,14 @@ export default function HistoryScreen() {
               marginBottom: 8,
             }}
           >
-            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                marginBottom: 8,
+              }}
+            >
               <View style={{ flex: 1 }}>
                 <Text style={{ color: colors.foreground, fontWeight: "600", fontSize: 14 }}>
                   {item.templateTitle}
@@ -128,6 +159,7 @@ export default function HistoryScreen() {
                   {item.date}
                 </Text>
               </View>
+
               <View style={{ flexDirection: "row", gap: 8 }}>
                 <Pressable
                   onPress={() => handleCopyMessage(item.text)}
@@ -135,6 +167,7 @@ export default function HistoryScreen() {
                 >
                   <MaterialIcons name="content-copy" size={18} color={colors.primary} />
                 </Pressable>
+
                 <Pressable
                   onPress={() => handleDeleteMessage(item.id)}
                   style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
@@ -143,6 +176,7 @@ export default function HistoryScreen() {
                 </Pressable>
               </View>
             </View>
+
             <Text
               style={{
                 color: colors.foreground,
