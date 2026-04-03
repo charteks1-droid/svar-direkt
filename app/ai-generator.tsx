@@ -10,17 +10,26 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { useSimpleAI } from "@/hooks/use-simple-ai";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const ScreenContainer = View;
+
+const colors = {
+  primary: "#2563eb",
+  background: "#ffffff",
+  foreground: "#111111",
+  muted: "#666666",
+  border: "#e5e5e5",
+  surface: "#f5f5f5",
+  error: "#dc2626",
+};
+
 export default function AIGeneratorScreen() {
   const router = useRouter();
-  const colors = useColors();
   const { generateText, loading, error: aiError } = useSimpleAI();
 
   const [prompt, setPrompt] = useState("");
@@ -29,20 +38,18 @@ export default function AIGeneratorScreen() {
   const [remainingRequests, setRemainingRequests] = useState(5);
   const [error, setError] = useState<string | null>(null);
 
-  // Load remaining requests on mount and after generation
   const loadRemainingRequests = useCallback(async () => {
     try {
       const today = new Date().toISOString().split("T")[0];
       const limitKey = `ai_limit_${today}`;
       const limitStr = await AsyncStorage.getItem(limitKey);
-      const limit = limitStr ? parseInt(limitStr) : 0;
+      const limit = limitStr ? parseInt(limitStr, 10) : 0;
       setRemainingRequests(Math.max(0, 5 - limit));
     } catch (err) {
       console.error("Error loading remaining requests:", err);
     }
   }, []);
 
-  // Load on component mount
   useEffect(() => {
     loadRemainingRequests();
   }, [loadRemainingRequests]);
@@ -65,7 +72,6 @@ export default function AIGeneratorScreen() {
       if (result) {
         setGeneratedText(result);
         setPrompt("");
-        // Update remaining requests after successful generation
         await loadRemainingRequests();
       }
     } catch (err) {
@@ -93,59 +99,88 @@ export default function AIGeneratorScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      className="flex-1"
+      style={{ flex: 1 }}
     >
-      <ScreenContainer className="flex-1 p-4">
+      <ScreenContainer style={{ flex: 1, padding: 16, backgroundColor: colors.background }}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          {/* Header */}
-          <View className="flex-row items-center justify-between mb-6">
-            <Text className="text-2xl font-bold text-foreground">
+          <View
+            style={{
+              marginBottom: 24,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text style={{ fontSize: 24, fontWeight: "700", color: colors.foreground }}>
               AI Generator
             </Text>
+
             <Pressable
               onPress={() => router.back()}
-              style={({ pressed }) => [
-                { opacity: pressed ? 0.6 : 1 },
-              ]}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
             >
-              <MaterialIcons
-                name="close"
-                size={28}
-                color={colors.foreground}
-              />
+              <MaterialIcons name="close" size={28} color={colors.foreground} />
             </Pressable>
           </View>
 
-          {/* Quota Info */}
           <View
-            className="bg-surface rounded-lg p-4 mb-6 border"
-            style={{ borderColor: colors.border }}
+            style={{
+              backgroundColor: colors.surface,
+              borderRadius: 12,
+              padding: 16,
+              marginBottom: 24,
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
           >
-            <Text className="text-sm text-muted mb-2">
+            <Text style={{ fontSize: 14, color: colors.muted, marginBottom: 8 }}>
               Daglig gräns för gratis användning
             </Text>
-            <View className="flex-row items-center justify-between">
-              <Text className="text-lg font-semibold text-foreground">
-                {remainingRequests} / {5} begäranden kvar
+
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text style={{ fontSize: 18, fontWeight: "600", color: colors.foreground }}>
+                {remainingRequests} / 5 begäranden kvar
               </Text>
+
               {remainingRequests === 0 && (
-                <Text className="text-sm text-error">Gränsen nådd</Text>
+                <Text style={{ fontSize: 14, color: colors.error }}>Gränsen nådd</Text>
               )}
             </View>
           </View>
 
-          {/* Error Message */}
           {(error || aiError) && (
-            <View className="bg-error/10 rounded-lg p-3 mb-4 border" style={{ borderColor: colors.error }}>
-              <Text className="text-error text-sm">{error || aiError}</Text>
+            <View
+              style={{
+                backgroundColor: "#fee2e2",
+                borderRadius: 12,
+                padding: 12,
+                marginBottom: 16,
+                borderWidth: 1,
+                borderColor: colors.error,
+              }}
+            >
+              <Text style={{ color: colors.error, fontSize: 14 }}>{error || aiError}</Text>
             </View>
           )}
 
-          {/* Prompt Input */}
-          <View className="mb-4">
-            <Text className="text-sm font-semibold text-foreground mb-2">
+          <View style={{ marginBottom: 16 }}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: "600",
+                color: colors.foreground,
+                marginBottom: 8,
+              }}
+            >
               Vad vill du att AI ska generera?
             </Text>
+
             <TextInput
               placeholder="Skriv din förfrågan här..."
               placeholderTextColor={colors.muted}
@@ -154,32 +189,45 @@ export default function AIGeneratorScreen() {
               multiline
               numberOfLines={4}
               editable={!loading && canGenerate}
-              className="bg-surface border rounded-lg p-3 text-foreground"
               style={{
+                backgroundColor: colors.surface,
+                borderWidth: 1,
+                borderRadius: 12,
+                padding: 12,
                 borderColor: colors.border,
                 color: colors.foreground,
+                minHeight: 110,
+                textAlignVertical: "top",
               }}
             />
           </View>
 
-          {/* Generate Button */}
           <Pressable
             onPress={handleGenerate}
             disabled={!canGenerate || loading || !prompt.trim()}
             style={({ pressed }) => [
               {
-                backgroundColor: canGenerate
-                  ? colors.primary
-                  : colors.muted,
+                backgroundColor: canGenerate && prompt.trim() ? colors.primary : colors.muted,
                 opacity: pressed && canGenerate ? 0.8 : 1,
+                borderRadius: 12,
+                padding: 16,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 24,
               },
             ]}
-            className="rounded-lg p-4 flex-row items-center justify-center mb-6"
           >
             {loading ? (
               <>
                 <ActivityIndicator color={colors.background} size="small" />
-                <Text className="ml-2 font-semibold text-background">
+                <Text
+                  style={{
+                    marginLeft: 8,
+                    fontWeight: "600",
+                    color: colors.background,
+                  }}
+                >
                   Genererar...
                 </Text>
               </>
@@ -190,56 +238,103 @@ export default function AIGeneratorScreen() {
                   size={20}
                   color={colors.background}
                 />
-                <Text className="ml-2 font-semibold text-background">
+                <Text
+                  style={{
+                    marginLeft: 8,
+                    fontWeight: "600",
+                    color: colors.background,
+                  }}
+                >
                   Generera text
                 </Text>
               </>
             )}
           </Pressable>
 
-          {/* Generated Text */}
-          {generatedText && (
-            <View className="mb-4">
-              <Text className="text-sm font-semibold text-foreground mb-2">
+          {generatedText ? (
+            <View style={{ marginBottom: 16 }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  color: colors.foreground,
+                  marginBottom: 8,
+                }}
+              >
                 Genererad text:
               </Text>
+
               <View
-                className="bg-surface rounded-lg p-4 border"
-                style={{ borderColor: colors.border }}
+                style={{
+                  backgroundColor: colors.surface,
+                  borderRadius: 12,
+                  padding: 16,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
               >
-                <Text className="text-base text-foreground leading-relaxed">
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.foreground,
+                    lineHeight: 24,
+                  }}
+                >
                   {generatedText}
                 </Text>
               </View>
 
-              {/* Copy Button */}
               <Pressable
                 onPress={handleCopy}
                 style={({ pressed }) => [
                   {
                     backgroundColor: colors.primary,
                     opacity: pressed ? 0.8 : 1,
+                    borderRadius: 12,
+                    padding: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: 16,
                   },
                 ]}
-                className="rounded-lg p-3 flex-row items-center justify-center mt-4"
               >
                 <MaterialIcons
                   name={copied ? "check" : "content-copy"}
                   size={20}
                   color={colors.background}
                 />
-                <Text className="ml-2 font-semibold text-background">
+                <Text
+                  style={{
+                    marginLeft: 8,
+                    fontWeight: "600",
+                    color: colors.background,
+                  }}
+                >
                   {copied ? "Kopierad!" : "Kopiera"}
                 </Text>
               </Pressable>
             </View>
-          )}
+          ) : null}
 
-          {/* Info */}
-          <View className="mt-auto pt-4 border-t" style={{ borderColor: colors.border }}>
-            <Text className="text-xs text-muted text-center">
-              AI Generator använder verklig AI för att generera sensowna meddelanden.
-              Gränsen återställs varje dag klockan 00:00.
+          <View
+            style={{
+              marginTop: "auto",
+              paddingTop: 16,
+              borderTopWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 12,
+                color: colors.muted,
+                textAlign: "center",
+                lineHeight: 18,
+              }}
+            >
+              AI Generator använder verklig AI för att generera sensowna meddelanden. Gränsen
+              återställs varje dag klockan 00:00.
             </Text>
           </View>
         </ScrollView>
