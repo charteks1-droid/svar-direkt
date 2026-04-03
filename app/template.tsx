@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   Text,
   View,
@@ -10,25 +10,30 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
-import { useAnalytics } from "@/hooks/use-analytics";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories } from "@/data/scenarios";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
-import * as Sharing from "expo-sharing";
-import { useMessageHistory } from "@/hooks/use-message-history";
+
+const ScreenContainer = View;
+
+const colors = {
+  primary: "#2563eb",
+  background: "#ffffff",
+  foreground: "#111111",
+  muted: "#666666",
+  border: "#e5e5e5",
+  surface: "#f5f5f5",
+  success: "#16a34a",
+};
 
 export default function TemplateScreen() {
   const { categoryId, scenarioId } = useLocalSearchParams<{
     categoryId: string;
     scenarioId: string;
   }>();
+
   const router = useRouter();
-  const colors = useColors();
-  const { addMessage } = useMessageHistory();
-  const { trackEvent } = useAnalytics();
 
   const category = categories.find((c) => c.id === categoryId);
   const scenario = category?.scenarios.find((s) => s.id === scenarioId);
@@ -36,29 +41,34 @@ export default function TemplateScreen() {
   const [values, setValues] = useState<Record<string, string>>({});
   const [copied, setCopied] = useState(false);
 
-
   const updateValue = useCallback((key: string, value: string) => {
     setValues((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const filledTemplate = useMemo(() => {
     if (!scenario) return "";
-    let text = scenario.template;
-    for (const ph of scenario.placeholders) {
-      const val = values[ph.key]?.trim();
-      const replacement = val || `[${ph.key}]`;
-      text = text.replace(new RegExp(`\\[${ph.key}\\]`, "g"), replacement);
+
+    if ("template" in scenario && Array.isArray((scenario as any).placeholders)) {
+      let text = (scenario as any).template ?? "";
+      for (const ph of (scenario as any).placeholders) {
+        const val = values[ph.key]?.trim();
+        const replacement = val || `[${ph.key}]`;
+        text = text.replace(new RegExp(`\\[${ph.key}\\]`, "g"), replacement);
+      }
+      return text;
     }
-    return text;
+
+    return (scenario as any).content ?? "";
   }, [scenario, values]);
+
+  const placeholders =
+    scenario && "placeholders" in scenario && Array.isArray((scenario as any).placeholders)
+      ? (scenario as any).placeholders
+      : [];
 
   const handleCopy = async () => {
     try {
       await Clipboard.setStringAsync(filledTemplate);
-      trackEvent("template_copied", categoryId, scenarioId);
-      if (scenario && category) {
-        await addMessage(filledTemplate, scenario.title, category.id);
-      }
       if (Platform.OS !== "web") {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
@@ -69,59 +79,34 @@ export default function TemplateScreen() {
     }
   };
 
-  const handleSendEmail = async () => {
-    try {
-      const subject = scenario?.title || "Meddelande från Svar Direkt";
-      
-      if (Platform.OS === "web") {
-        const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(filledTemplate)}`;
-        window.location.href = mailtoLink;
-      } else {
-        // Use Sharing API for native platforms
-        const canShare = await Sharing.isAvailableAsync();
-        if (canShare) {
-          await Sharing.shareAsync(filledTemplate, {
-            mimeType: "text/plain",
-            dialogTitle: "Dela meddelande",
-          });
-        } else {
-          console.warn("Sharing not available on this platform");
-        }
-      }
-      
-      // Save to message history
-      if (scenario && category) {
-        await addMessage(filledTemplate, scenario.title, category.id);
-      }
-      if (Platform.OS !== "web") {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-    } catch (e) {
-      console.error("Failed to send email:", e);
-    }
-  };
-
   if (!scenario || !category) {
     return (
-      <ScreenContainer className="flex-1 items-center justify-center p-6">
-        <Text className="text-foreground text-lg">Meddelandet hittades inte.</Text>
+      <ScreenContainer
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+          backgroundColor: colors.background,
+        }}
+      >
+        <Text style={{ color: colors.foreground, fontSize: 18 }}>
+          Meddelandet hittades inte.
+        </Text>
       </ScreenContainer>
     );
   }
 
   return (
-    <ScreenContainer edges={["top", "left", "right", "bottom"]}>
-      {/* Header */}
+    <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Pressable
           onPress={() => router.back()}
-          style={({ pressed }) => [
-            styles.backButton,
-            pressed && { opacity: 0.6 },
-          ]}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
         >
           <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
+
         <View style={styles.headerTextContainer}>
           <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={2}>
             {scenario.title}
@@ -142,13 +127,13 @@ export default function TemplateScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Placeholder Fields */}
-          {scenario.placeholders.length > 0 && (
+          {placeholders.length > 0 && (
             <View style={styles.fieldsSection}>
               <Text style={[styles.sectionLabel, { color: colors.muted }]}>
                 Fyll i dina uppgifter
               </Text>
-              {scenario.placeholders.map((ph) => (
+
+              {placeholders.map((ph: any) => (
                 <View key={ph.key} style={styles.fieldRow}>
                   <Text style={[styles.fieldLabel, { color: colors.foreground }]}>
                     {ph.label}
@@ -174,11 +159,11 @@ export default function TemplateScreen() {
             </View>
           )}
 
-          {/* Message Preview */}
           <View style={styles.messageSection}>
             <Text style={[styles.sectionLabel, { color: colors.muted }]}>
               Förhandsgranskning
             </Text>
+
             <View
               style={[
                 styles.messageBox,
@@ -188,24 +173,19 @@ export default function TemplateScreen() {
                 },
               ]}
             >
-              <Text
-                style={[styles.messageText, { color: colors.foreground }]}
-                selectable
-              >
+              <Text style={[styles.messageText, { color: colors.foreground }]} selectable>
                 {filledTemplate}
               </Text>
             </View>
           </View>
         </ScrollView>
 
-        {/* Action Buttons */}
         <View style={[styles.bottomBar, { borderTopColor: colors.border }]}>
           <View style={styles.buttonContainer}>
             <Pressable
               onPress={handleCopy}
               style={({ pressed }) => [
                 styles.actionButton,
-                styles.copyButton,
                 {
                   backgroundColor: copied ? colors.success : colors.primary,
                 },
@@ -217,9 +197,7 @@ export default function TemplateScreen() {
                 size={20}
                 color="#FFFFFF"
               />
-              <Text style={styles.buttonText}>
-                {copied ? "Kopierat!" : "Kopiera"}
-              </Text>
+              <Text style={styles.buttonText}>{copied ? "Kopierat!" : "Kopiera"}</Text>
             </Pressable>
           </View>
         </View>
@@ -313,8 +291,6 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 10,
   },
-  copyButton: {},
-  emailButton: {},
   buttonText: {
     color: "#FFFFFF",
     fontSize: 14,
