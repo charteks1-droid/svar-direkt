@@ -1,221 +1,296 @@
 import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import { ScreenContainer } from "@/components/screen-container";
-import { ThemedView } from "@/components/themed-view";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { SchemeColors, type ColorScheme } from "@/constants/theme";
-import { useColors } from "@/hooks/use-colors";
-import { useThemeContext } from "@/lib/theme-provider";
+const ScreenContainer = View;
 
-type PaletteName = keyof typeof SchemeColors.light;
+const lightColors = {
+  background: "#ffffff",
+  surface: "#f5f5f5",
+  foreground: "#111111",
+  muted: "#666666",
+  border: "#e5e5e5",
+  primary: "#2563eb",
+  success: "#16a34a",
+  warning: "#d97706",
+  error: "#dc2626",
+};
 
-const paletteNames: PaletteName[] = Object.keys(SchemeColors.light) as PaletteName[];
+const darkColors = {
+  background: "#111111",
+  surface: "#1f1f1f",
+  foreground: "#f5f5f5",
+  muted: "#a3a3a3",
+  border: "#3a3a3a",
+  primary: "#3b82f6",
+  success: "#22c55e",
+  warning: "#f59e0b",
+  error: "#ef4444",
+};
 
-function ColorSwatch({ name, value }: { name: PaletteName; value: string }) {
+type ColorScheme = "light" | "dark";
+type PaletteName = keyof typeof lightColors;
+
+const paletteNames: PaletteName[] = Object.keys(lightColors) as PaletteName[];
+
+function ColorSwatch({ name, value, border }: { name: PaletteName; value: string; border: string }) {
   return (
-    <View className="flex-row items-center justify-between rounded-xl border border-border px-3 py-2">
-      <View className="flex-row items-center gap-3">
-        <View className="h-6 w-6 rounded-full border border-border" style={{ backgroundColor: value }} />
-        <Text className="text-sm font-semibold text-foreground">{name}</Text>
+    <View
+      style={{
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: border,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <View
+          style={{
+            height: 24,
+            width: 24,
+            borderRadius: 999,
+            borderWidth: 1,
+            borderColor: border,
+            backgroundColor: value,
+          }}
+        />
+        <Text style={{ fontSize: 14, fontWeight: "600" }}>{name}</Text>
       </View>
-      <Text className="text-xs font-mono text-muted">{value}</Text>
+      <Text style={{ fontSize: 12, color: "#666666" }}>{value}</Text>
     </View>
   );
 }
 
 export default function ThemeLabScreen() {
   const [pressCount, setPressCount] = useState(0);
-  const [lastAction, setLastAction] = useState<string>("None yet");
-  const { colorScheme, setColorScheme } = useThemeContext();
-  const colors = useColors();
+  const [lastAction, setLastAction] = useState("None yet");
+  const [colorScheme, setColorScheme] = useState<ColorScheme>("light");
+
+  const colors = colorScheme === "light" ? lightColors : darkColors;
 
   const swatches = useMemo(
     () =>
       paletteNames.map((name) => ({
         name,
-        value: SchemeColors[colorScheme][name],
+        value: colors[name],
       })),
-    [colorScheme],
+    [colors],
   );
 
-  const tileStyles = useMemo(() => {
-    const build = (scheme: ColorScheme) => ({
-      background: SchemeColors[scheme].background,
-      border: SchemeColors[scheme].border,
-      text: SchemeColors[scheme].foreground,
-      subText: SchemeColors[scheme].muted,
-      activeBackground: SchemeColors[scheme].primary,
-      activeText: SchemeColors[scheme].background,
-    });
-    return {
-      light: build("light"),
-      dark: build("dark"),
-    };
-  }, []);
-
   return (
-    <ScreenContainer className="p-5">
-      <ScrollView className="flex-1">
-        <View className="gap-4 pb-8">
-          <View className="flex-row gap-2">
-            {(["light", "dark"] as ColorScheme[]).map((scheme) => (
-              <Pressable
-                key={scheme}
-                style={[
-                  styles.schemeToggle,
-                  {
-                    backgroundColor:
-                      colorScheme === scheme
-                        ? tileStyles[scheme].activeBackground
-                        : tileStyles[scheme].background,
-                    borderColor:
-                      colorScheme === scheme
-                        ? tileStyles[scheme].activeBackground
-                        : tileStyles[scheme].border,
-                  },
-                ]}
-                onPress={() => {
-                  setColorScheme(scheme);
-                  setLastAction(`Applied ${scheme} globally`);
-                }}
-              >
-                <Text
+    <ScreenContainer style={{ flex: 1, backgroundColor: colors.background, padding: 20 }}>
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 32 }}>
+        <View style={{ gap: 16 }}>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            {(["light", "dark"] as ColorScheme[]).map((scheme) => {
+              const schemeColors = scheme === "light" ? lightColors : darkColors;
+              const isActive = colorScheme === scheme;
+
+              return (
+                <Pressable
+                  key={scheme}
                   style={[
-                    styles.schemeToggleTitle,
+                    styles.schemeToggle,
                     {
-                      color:
-                        colorScheme === scheme
-                          ? tileStyles[scheme].activeText
-                          : tileStyles[scheme].text,
+                      backgroundColor: isActive ? schemeColors.primary : schemeColors.background,
+                      borderColor: isActive ? schemeColors.primary : schemeColors.border,
                     },
                   ]}
+                  onPress={() => {
+                    setColorScheme(scheme);
+                    setLastAction(`Applied ${scheme} preview`);
+                  }}
                 >
-                  {scheme === "light" ? "Light preview" : "Dark preview"}
-                </Text>
-                <Text
-                  style={[
-                    styles.schemeToggleSubtitle,
-                    {
-                      color:
-                        colorScheme === scheme
-                          ? tileStyles[scheme].activeText
-                          : tileStyles[scheme].subText,
-                    },
-                  ]}
-                >
-                  Global theme (NativeWind + useColors)
-                </Text>
-              </Pressable>
-            ))}
+                  <Text
+                    style={[
+                      styles.schemeToggleTitle,
+                      {
+                        color: isActive ? schemeColors.background : schemeColors.foreground,
+                      },
+                    ]}
+                  >
+                    {scheme === "light" ? "Light preview" : "Dark preview"}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.schemeToggleSubtitle,
+                      {
+                        color: isActive ? schemeColors.background : schemeColors.muted,
+                      },
+                    ]}
+                  >
+                    Lokal tematest
+                  </Text>
+                </Pressable>
+              );
+            })}
           </View>
 
-          <ThemedView className="rounded-2xl border border-border p-4">
-            <Text className="text-lg font-bold text-foreground">
-              Tailwind tokens
+          <View
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 16,
+              backgroundColor: colors.surface,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
+              Temafärger
             </Text>
-            <Text className="mt-1 text-sm text-muted">
-              Buttons and badges driven by global {colorScheme} palette
+            <Text style={{ marginTop: 4, fontSize: 14, color: colors.muted }}>
+              Enkel testyta utan externa beroenden
             </Text>
 
-            <View className="mt-4 flex-row flex-wrap gap-2">
+            <View style={{ marginTop: 16, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               <TouchableOpacity
-                className="rounded-full px-4 py-2"
-                style={{ backgroundColor: SchemeColors[colorScheme].primary }}
+                style={{
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: colors.primary,
+                }}
                 onPress={() => {
                   setPressCount((count) => count + 1);
-                  setLastAction("Pressed Primary token");
+                  setLastAction("Pressed Primary");
                 }}
               >
-                <Text className="text-sm font-semibold text-background">Primary</Text>
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.background }}>
+                  Primary
+                </Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                className="rounded-full px-4 py-2 border border-border"
-                style={{ backgroundColor: SchemeColors[colorScheme].surface }}
+                style={{
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: colors.surface,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                }}
                 onPress={() => {
                   setPressCount((count) => count + 1);
-                  setLastAction("Pressed Surface token");
+                  setLastAction("Pressed Surface");
                 }}
               >
-                <Text className="text-sm font-semibold text-foreground">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.foreground }}>
                   Surface
                 </Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                className="rounded-full px-4 py-2"
-                style={{ backgroundColor: SchemeColors[colorScheme].success }}
+                style={{
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: colors.success,
+                }}
                 onPress={() => {
                   setPressCount((count) => count + 1);
-                  setLastAction("Pressed Success token");
+                  setLastAction("Pressed Success");
                 }}
               >
-                <Text className="text-sm font-semibold text-background">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.background }}>
                   Success
                 </Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                className="rounded-full px-4 py-2"
-                style={{ backgroundColor: SchemeColors[colorScheme].warning }}
+                style={{
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: colors.warning,
+                }}
                 onPress={() => {
                   setPressCount((count) => count + 1);
-                  setLastAction("Pressed Warning token");
+                  setLastAction("Pressed Warning");
                 }}
               >
-                <Text className="text-sm font-semibold text-background">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.background }}>
                   Warning
                 </Text>
               </TouchableOpacity>
+
               <TouchableOpacity
-                className="rounded-full px-4 py-2"
-                style={{ backgroundColor: SchemeColors[colorScheme].error }}
+                style={{
+                  borderRadius: 999,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
+                  backgroundColor: colors.error,
+                }}
                 onPress={() => {
                   setPressCount((count) => count + 1);
-                  setLastAction("Pressed Error token");
+                  setLastAction("Pressed Error");
                 }}
               >
-                <Text className="text-sm font-semibold text-background">
+                <Text style={{ fontSize: 14, fontWeight: "600", color: colors.background }}>
                   Error
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View className="mt-4 rounded-xl bg-background p-4 border border-border">
-              <Text className="text-base font-semibold text-foreground">
-                useColors()
+            <View
+              style={{
+                marginTop: 16,
+                borderRadius: 12,
+                backgroundColor: colors.background,
+                padding: 16,
+                borderWidth: 1,
+                borderColor: colors.border,
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "600", color: colors.foreground }}>
+                Aktivt schema
               </Text>
-              <Text className="mt-1 text-sm text-muted">
-                Background: {colors.background} • Text: {colors.text} • Tint: {colors.tint}
+              <Text style={{ marginTop: 4, fontSize: 14, color: colors.muted }}>
+                Background: {colors.background} • Text: {colors.foreground} • Primary: {colors.primary}
               </Text>
-              <Text className="text-xs text-muted">
-                (Pressable uses style; Tailwind on Pressable is disabled via remap)
-              </Text>
-              <View className="mt-3 gap-2">
-                <View className="flex-row items-center gap-2">
-                  <IconSymbol name="house.fill" color={colors.tint} size={20} />
-                  <Text className="text-sm text-foreground">
+
+              <View style={{ marginTop: 12, gap: 8 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                  <MaterialIcons name="home" size={20} color={colors.primary} />
+                  <Text style={{ fontSize: 14, color: colors.foreground }}>
                     Press count: {pressCount}
                   </Text>
                 </View>
-                <Text className="text-sm text-muted">
-                  Last action: {lastAction}
-                </Text>
+                <Text style={{ fontSize: 14, color: colors.muted }}>Last action: {lastAction}</Text>
               </View>
             </View>
-          </ThemedView>
+          </View>
 
-          <ThemedView className="rounded-2xl border border-border p-4">
-            <Text className="text-lg font-bold text-foreground">
+          <View
+            style={{
+              borderRadius: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: 16,
+              backgroundColor: colors.surface,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: "700", color: colors.foreground }}>
               Palette values
             </Text>
-            <Text className="mt-1 text-sm text-muted">
+            <Text style={{ marginTop: 4, fontSize: 14, color: colors.muted }}>
               Live values for the selected scheme
             </Text>
-            <View className="mt-3 gap-2">
+
+            <View style={{ marginTop: 12, gap: 8 }}>
               {swatches.map((item) => (
-                <ColorSwatch key={item.name} name={item.name} value={item.value} />
+                <ColorSwatch
+                  key={item.name}
+                  name={item.name}
+                  value={item.value}
+                  border={colors.border}
+                />
               ))}
             </View>
-          </ThemedView>
+          </View>
         </View>
       </ScrollView>
     </ScreenContainer>
