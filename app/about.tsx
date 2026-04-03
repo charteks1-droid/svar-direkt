@@ -1,13 +1,13 @@
 import { useRouter } from "expo-router";
 import { ScrollView, Text, View, Pressable } from "react-native";
-import { useColors } from "@/hooks/use-colors";
+
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import * as Haptics from "expo-haptics";
 import { Platform } from "react-native";
 
 export default function AboutScreen() {
   const router = useRouter();
-  const colors = useColors();
+ 
 
   const handleBackPress = () => {
     if (Platform.OS !== "web") {
@@ -27,7 +27,7 @@ export default function AboutScreen() {
             },
           ]}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.foreground} />
+          <MaterialIcons name="arrow-back" size={24} color="#111" />
         </Pressable>
         <Text className="text-2xl font-bold text-foreground">Om appen</Text>
         <View style={{ width: 24 }} />
