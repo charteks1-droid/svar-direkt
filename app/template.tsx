@@ -91,14 +91,16 @@ export default function TemplateScreen() {
 
   return (
     <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* HEADER */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+        >
           <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
 
         <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={2}>
             {scenario.title}
           </Text>
           <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
@@ -113,9 +115,9 @@ export default function TemplateScreen() {
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* POLA */}
           {placeholders.length > 0 && (
             <View style={styles.fieldsSection}>
               <Text style={[styles.sectionLabel, { color: colors.muted }]}>
@@ -140,13 +142,14 @@ export default function TemplateScreen() {
                     placeholderTextColor={colors.muted}
                     value={values[ph.key] || ""}
                     onChangeText={(text) => updateValue(ph.key, text)}
+                    returnKeyType="done"
+                    autoCorrect={false}
                   />
                 </View>
               ))}
             </View>
           )}
 
-          {/* PODGLĄD */}
           <View style={styles.messageSection}>
             <Text style={[styles.sectionLabel, { color: colors.muted }]}>
               Förhandsgranskning
@@ -161,33 +164,34 @@ export default function TemplateScreen() {
                 },
               ]}
             >
-              <Text style={[styles.messageText, { color: colors.foreground }]}>
+              <Text style={[styles.messageText, { color: colors.foreground }]} selectable>
                 {filledTemplate}
               </Text>
             </View>
           </View>
+        </ScrollView>
 
-          {/* PRZYCISK KOPIUJ — TERAZ WIDOCZNY */}
+        <View style={[styles.copyBar, { borderTopColor: colors.border, backgroundColor: colors.background }]}>
           <Pressable
             onPress={handleCopy}
             style={({ pressed }) => [
-              styles.actionButton,
+              styles.copyButton,
               {
                 backgroundColor: copied ? colors.success : colors.primary,
               },
-              pressed && { opacity: 0.9, transform: [{ scale: 0.97 }] },
+              pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
             ]}
           >
             <MaterialIcons
               name={copied ? "check" : "content-copy"}
               size={20}
-              color="#fff"
+              color="#ffffff"
             />
-            <Text style={styles.buttonText}>
+            <Text style={styles.copyButtonText}>
               {copied ? "Kopierat!" : "Kopiera"}
             </Text>
           </Pressable>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     </ScreenContainer>
   );
@@ -199,14 +203,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
-    backgroundColor: "#fff",
+    backgroundColor: "#ffffff",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    gap: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     borderBottomWidth: 0.5,
+    gap: 12,
+  },
+  backButton: {
+    padding: 4,
   },
   headerTextContainer: {
     flex: 1,
@@ -214,13 +222,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
+    lineHeight: 24,
   },
   headerSubtitle: {
     fontSize: 13,
+    marginTop: 2,
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 40,
+    paddingBottom: 24,
   },
   fieldsSection: {
     marginBottom: 20,
@@ -228,6 +238,8 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 13,
     fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
     marginBottom: 10,
   },
   fieldRow: {
@@ -235,16 +247,18 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 14,
+    fontWeight: "500",
     marginBottom: 6,
   },
   fieldInput: {
     borderWidth: 1,
     borderRadius: 10,
-    padding: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
   },
   messageSection: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   messageBox: {
     borderWidth: 1,
@@ -256,17 +270,24 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
-  actionButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    padding: 14,
-    borderRadius: 10,
+  copyBar: {
+    borderTopWidth: 0.5,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
+  copyButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  copyButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "700",
   },
 });
