@@ -4,37 +4,37 @@ import * as Haptics from "expo-haptics";
 import { categories } from "@/data/scenarios";
 import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
-Const ScreenContainer = View;
+const ScreenContainer = View;
 
-Const colors = {
-  Primary: „#2563eb”,
-  primarySoft: „#dbeafe”,
-  background: „#f8fafc”,
-  foreground: „#0f172a”,
-  muted: „#64748b”,
-  border: „#e2e8f0”,
-  surface: „#ffffff”,
+const colors = {
+  primary: "#2563eb",
+  primarySoft: "#dbeafe",
+  background: "#f8fafc",
+  foreground: "#0f172a",
+  muted: "#64748b",
+  border: "#e2e8f0",
+  surface: "#ffffff",
 };
 
-Export default function HomeScreen() {
-  Const router = useRouter();
+export default function HomeScreen() {
+  const router = useRouter();
 
-  Const handleCategoryPress = (categoryId: string) => {
-    If (Platform.OS !== „web”) {
+  const handleCategoryPress = (categoryId: string) => {
+    if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    Router.push({ pathname: „/situations”, params: { categoryId } });
+    router.push({ pathname: "/situations", params: { categoryId } });
   };
 
-  Return (
+  return (
     <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View
-          Style={[
-            Styles.heroCard,
+          style={[
+            styles.heroCard,
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
@@ -43,7 +43,7 @@ Export default function HomeScreen() {
         >
           <View style={styles.heroTopRow}>
             <View style={[styles.heroIconWrap, { backgroundColor: colors.primarySoft }]}>
-              <MaterialIcons name=”chat-bubble-outline” size={28} color={colors.primary} />
+              <MaterialIcons name="chat-bubble-outline" size={28} color={colors.primary} />
             </View>
           </View>
 
@@ -55,8 +55,8 @@ Export default function HomeScreen() {
         </View>
 
         <View
-          Style={[
-            Styles.infoCard,
+          style={[
+            styles.infoCard,
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
@@ -65,7 +65,7 @@ Export default function HomeScreen() {
         >
           <View style={styles.infoHeader}>
             <View style={[styles.infoIconWrap, { backgroundColor: colors.primarySoft }]}>
-              <MaterialIcons name=”info-outline” size={16} color={colors.primary} />
+              <MaterialIcons name="info-outline" size={16} color={colors.primary} />
             </View>
             <Text style={[styles.infoTitle, { color: colors.foreground }]}>
               Viktig information
@@ -75,7 +75,7 @@ Export default function HomeScreen() {
           <Text style={[styles.infoText, { color: colors.muted }]}>
             Denna app ger exempel på meddelanden och formuleringar för olika situationer.
             Den erbjuder inte juridisk rådgivning och ersätter inte kontakt med myndighet,
-            Jurist eller annan professionell rådgivare.
+            jurist eller annan professionell rådgivare.
           </Text>
         </View>
 
@@ -87,7 +87,7 @@ Export default function HomeScreen() {
         <View style={styles.cardList}>
           {categories.map((category) => (
             <Pressable
-              Key={category.id}
+              key={category.id}
               onPress={() => handleCategoryPress(category.id)}
               style={({ pressed }) => [
                 styles.card,
@@ -95,12 +95,12 @@ Export default function HomeScreen() {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
                 },
-                Pressed && styles.cardPressed,
+                pressed && styles.cardPressed,
               ]}
             >
               <View
-                Style={[
-                  Styles.iconContainer,
+                style={[
+                  styles.iconContainer,
                   {
                     backgroundColor: colors.primarySoft,
                   },
@@ -123,8 +123,8 @@ Export default function HomeScreen() {
                 </Text>
               </View>
 
-              <View style={[styles.chevronWrap, { backgroundColor: „#f8fafc” }]}>
-                <MaterialIcons name=”chevron-right” size={18} color={colors.muted} />
+              <View style={[styles.chevronWrap, { backgroundColor: "#f8fafc" }]}>
+                <MaterialIcons name="chevron-right" size={18} color={colors.muted} />
               </View>
             </Pressable>
           ))}
@@ -143,7 +143,7 @@ Export default function HomeScreen() {
   );
 }
 
-Const styles = StyleSheet.create({
+const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 16,
     paddingTop: 16,
@@ -156,27 +156,27 @@ Const styles = StyleSheet.create({
     borderWidth: 1,
   },
   heroTopRow: {
-    flexDirection: „row”,
-    justifyContent: „space-between”,
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
   heroIconWrap: {
     width: 56,
     height: 56,
     borderRadius: 16,
-    alignItems: „center”,
-    justifyContent: „center”,
+    alignItems: "center",
+    justifyContent: "center",
   },
   heroTitle: {
     fontSize: 30,
-    fontWeight: „800”,
+    fontWeight: "800",
     marginBottom: 8,
     letterSpacing: -0.6,
   },
   heroSubtitle: {
     fontSize: 14,
     lineHeight: 21,
-    maxWidth: „92%”,
+    maxWidth: "92%",
   },
   infoCard: {
     borderWidth: 1,
@@ -185,8 +185,8 @@ Const styles = StyleSheet.create({
     marginBottom: 20,
   },
   infoHeader: {
-    flexDirection: „row”,
-    alignItems: „center”,
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginBottom: 10,
   },
@@ -194,12 +194,12 @@ Const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 10,
-    alignItems: „center”,
-    justifyContent: „center”,
+    alignItems: "center",
+    justifyContent: "center",
   },
   infoTitle: {
     fontSize: 15,
-    fontWeight: „700”,
+    fontWeight: "700",
   },
   infoText: {
     fontSize: 13,
@@ -211,7 +211,7 @@ Const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 19,
-    fontWeight: „700”,
+    fontWeight: "700",
     marginBottom: 2,
     letterSpacing: -0.3,
   },
@@ -221,9 +221,9 @@ Const styles = StyleSheet.create({
   cardList: {
     gap: 10,
   },
-  Card: {
-    flexDirection: „row”,
-    alignItems: „center”,
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderRadius: 20,
     padding: 14,
@@ -236,8 +236,8 @@ Const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 16,
-    alignItems: „center”,
-    justifyContent: „center”,
+    alignItems: "center",
+    justifyContent: "center",
     marginRight: 12,
   },
   cardContent: {
@@ -247,7 +247,7 @@ Const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    fontWeight: „700”,
+    fontWeight: "700",
     marginBottom: 3,
   },
   cardSubtitle: {
@@ -261,11 +261,11 @@ Const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    alignItems: „center”,
-    justifyContent: „center”,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  Footer: {
-    alignItems: „center”,
+  footer: {
+    alignItems: "center",
     marginTop: 24,
     paddingTop: 10,
     paddingBottom: 8,
@@ -273,7 +273,6 @@ Const styles = StyleSheet.create({
   footerText: {
     fontSize: 12,
     lineHeight: 18,
-    textAlign: „center”,
+    textAlign: "center",
   },
 });
-
