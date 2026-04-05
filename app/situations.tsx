@@ -2,17 +2,18 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { categories, type Scenario } from "@/data/scenarios";
 import * as Haptics from "expo-haptics";
-import { Platform, Text, View, Pressable, FlatList, StyleSheet, ScrollView } from "react-native";
+import { Platform, Text, View, Pressable, FlatList, StyleSheet } from "react-native";
 
 const ScreenContainer = View;
 
 const colors = {
-  primary: "#2563eb",
-  background: "#ffffff",
-  foreground: "#111111",
-  muted: "#666666",
-  border: "#e5e5e5",
-  surface: "#f5f5f5",
+  primary: "#0f8db3",
+  primarySoft: "#e7f6fb",
+  background: "#f4f8fb",
+  foreground: "#0f172a",
+  muted: "#6b7c8f",
+  border: "#d9e4ec",
+  surface: "#ffffff",
 };
 
 export default function SituationsScreen() {
@@ -21,197 +22,137 @@ export default function SituationsScreen() {
 
   const category = categories.find((c) => c.id === categoryId);
 
+  const handleBack = () => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    router.back();
+  };
+
+  const handleScenarioPress = (scenarioId: string) => {
+    if (!category) return;
+
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+
+    router.push({
+      pathname: "/template",
+      params: { categoryId: category.id, scenarioId },
+    });
+  };
+
   if (!category) {
     return (
-      <ScreenContainer
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 24,
-          backgroundColor: colors.background,
-        }}
-      >
-        <Text style={{ color: colors.foreground, fontSize: 18 }}>Kategori hittades inte.</Text>
+      <ScreenContainer style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text style={{ color: colors.foreground, fontSize: 18, fontWeight: "700" }}>
+          Kategori hittades inte
+        </Text>
+        <Pressable
+          onPress={handleBack}
+          style={({ pressed }) => [
+            styles.retryButton,
+            { backgroundColor: colors.primary },
+            pressed && { opacity: 0.9 },
+          ]}
+        >
+          <Text style={styles.retryButtonText}>Tillbaka</Text>
+        </Pressable>
       </ScreenContainer>
     );
   }
 
   if (!category.scenarios || category.scenarios.length === 0) {
     return (
-      <ScreenContainer style={{ flex: 1, padding: 16, backgroundColor: colors.background }}>
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center", gap: 24 }}>
-            <Pressable
-              onPress={() => router.back()}
-              style={({ pressed }) => [
-                { position: "absolute", top: 16, left: 16, padding: 8 },
-                pressed && { opacity: 0.6 },
-              ]}
-            >
-              <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
-            </Pressable>
+      <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={[styles.header, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
+          <Pressable
+            onPress={handleBack}
+            style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+          >
+            <MaterialIcons name="arrow-back" size={28} color={colors.foreground} />
+          </Pressable>
 
-            <View
-              style={{
-                width: 80,
-                height: 80,
-                borderRadius: 40,
-                backgroundColor: `${colors.primary}15`,
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 40,
-              }}
-            >
-              <MaterialIcons name="schedule" size={40} color={colors.primary} />
-            </View>
-
-            <Text
-              style={{
-                fontSize: 24,
-                fontWeight: "600",
-                color: colors.foreground,
-                textAlign: "center",
-              }}
-            >
-              Innehåll kommer snart
-            </Text>
-
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "500",
-                color: colors.primary,
-                textAlign: "center",
-              }}
-            >
+          <View style={styles.headerTextContainer}>
+            <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={1}>
               {category.title}
             </Text>
-
-            <Text
-              style={{
-                fontSize: 16,
-                color: colors.muted,
-                textAlign: "center",
-                lineHeight: 24,
-              }}
-            >
-              Färdiga svar och mallar för denna myndighet läggs till i en kommande uppdatering av
-              appen.
+            <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
+              Välj din situation
             </Text>
-
-            <View
-              style={{
-                backgroundColor: colors.surface,
-                borderRadius: 12,
-                padding: 16,
-                borderWidth: 1,
-                borderColor: colors.border,
-                gap: 8,
-                width: "100%",
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "500",
-                  color: colors.foreground,
-                }}
-              >
-                Vad kan du göra nu?
-              </Text>
-              <Text
-                style={{
-                  fontSize: 13,
-                  color: colors.muted,
-                  lineHeight: 20,
-                }}
-              >
-                • Utforska andra kategorier med färdiga svar{"\n"}• Gå tillbaka till startsidan{"\n"}•
-                Fler mallar kommer snart
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={() => router.back()}
-              style={({ pressed }) => [
-                {
-                  paddingHorizontal: 24,
-                  paddingVertical: 12,
-                  borderRadius: 8,
-                  backgroundColor: colors.primary,
-                  marginTop: 16,
-                },
-                pressed && { opacity: 0.8, transform: [{ scale: 0.97 }] },
-              ]}
-            >
-              <Text
-                style={{
-                  color: colors.background,
-                  fontSize: 16,
-                  fontWeight: "600",
-                  textAlign: "center",
-                }}
-              >
-                Tillbaka
-              </Text>
-            </Pressable>
           </View>
-        </ScrollView>
+        </View>
+
+        <View style={styles.emptyWrap}>
+          <View style={[styles.emptyIconBox, { backgroundColor: colors.primarySoft }]}>
+            <MaterialIcons name="schedule" size={34} color={colors.primary} />
+          </View>
+
+          <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
+            Innehåll kommer snart
+          </Text>
+
+          <Text style={[styles.emptyText, { color: colors.muted }]}>
+            Den här kategorin är inte färdig ännu, men mallar läggs till i en kommande uppdatering.
+          </Text>
+
+          <Pressable
+            onPress={handleBack}
+            style={({ pressed }) => [
+              styles.primaryButton,
+              { backgroundColor: colors.primary },
+              pressed && { opacity: 0.92 },
+            ]}
+          >
+            <Text style={styles.primaryButtonText}>Tillbaka</Text>
+          </Pressable>
+        </View>
       </ScreenContainer>
     );
   }
-
-  const handleScenarioPress = (scenarioId: string) => {
-    if (Platform.OS !== "web") {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-
-    router.push({
-      pathname: "/template" as any,
-      params: { categoryId: category.id, scenarioId },
-    });
-  };
 
   const renderItem = ({ item }: { item: Scenario }) => (
     <Pressable
       onPress={() => handleScenarioPress(item.id)}
       style={({ pressed }) => [
-        styles.listItem,
+        styles.card,
         {
           backgroundColor: colors.surface,
           borderColor: colors.border,
         },
-        pressed && { opacity: 0.7 },
+        pressed && styles.cardPressed,
       ]}
     >
-      <View style={styles.listItemContent}>
-        <Text style={[styles.listItemTitle, { color: colors.foreground }]}>{item.title}</Text>
-        <Text
-          style={[styles.listItemDescription, { color: colors.muted }]}
-          numberOfLines={2}
-        >
+      <View style={styles.cardTextWrap}>
+        <Text style={[styles.cardTitle, { color: colors.foreground }]}>{item.title}</Text>
+        <Text style={[styles.cardDescription, { color: colors.muted }]} numberOfLines={3}>
           {item.description}
         </Text>
       </View>
 
-      <MaterialIcons name="chevron-right" size={22} color={colors.muted} />
+      <View style={[styles.chevronWrap, { backgroundColor: colors.primarySoft }]}>
+        <MaterialIcons name="chevron-right" size={22} color={colors.primary} />
+      </View>
     </Pressable>
   );
 
   return (
     <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
+      <View style={[styles.header, { borderBottomColor: colors.border, backgroundColor: colors.surface }]}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={handleBack}
           style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
+          <MaterialIcons name="arrow-back" size={28} color={colors.foreground} />
         </Pressable>
 
         <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>{category.title}</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.muted }]}>Välj din situation</Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={1}>
+            {category.title}
+          </Text>
+          <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
+            Välj din situation
+          </Text>
         </View>
       </View>
 
@@ -219,59 +160,129 @@ export default function SituationsScreen() {
         data={category.scenarios}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 14 }} />}
       />
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 0.5,
-    gap: 12,
+    paddingTop: 16,
+    paddingBottom: 14,
+    borderBottomWidth: 1,
   },
   backButton: {
-    padding: 4,
+    marginRight: 10,
+    padding: 2,
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    fontSize: 22,
-    fontWeight: "700",
+    fontSize: 19,
+    fontWeight: "800",
+    lineHeight: 24,
   },
   headerSubtitle: {
     fontSize: 13,
-    marginTop: 1,
+    marginTop: 2,
   },
-  listContainer: {
+  listContent: {
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 28,
   },
-  listItem: {
+  card: {
+    borderWidth: 1,
+    borderRadius: 22,
+    padding: 18,
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 12,
   },
-  listItemContent: {
+  cardPressed: {
+    opacity: 0.95,
+    transform: [{ scale: 0.985 }],
+  },
+  cardTextWrap: {
     flex: 1,
+    paddingRight: 12,
   },
-  listItemTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 4,
+  cardTitle: {
+    fontSize: 17,
+    fontWeight: "800",
+    lineHeight: 23,
+    marginBottom: 6,
   },
-  listItemDescription: {
-    fontSize: 13,
-    lineHeight: 18,
+  cardDescription: {
+    fontSize: 14,
+    lineHeight: 21,
+  },
+  chevronWrap: {
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+  },
+  emptyIconBox: {
+    width: 82,
+    height: 82,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 18,
+  },
+  emptyTitle: {
+    fontSize: 24,
+    fontWeight: "800",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  emptyText: {
+    fontSize: 15,
+    lineHeight: 23,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  primaryButton: {
+    minWidth: 160,
+    paddingHorizontal: 22,
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  primaryButtonText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+  retryButton: {
+    marginTop: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  retryButtonText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "700",
   },
 });
