@@ -73,7 +73,7 @@ export default function TemplateScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
       setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      setTimeout(() => setCopied(false), 2000);
     } catch (e) {
       console.error("Failed to copy:", e);
     }
@@ -81,15 +81,7 @@ export default function TemplateScreen() {
 
   if (!scenario || !category) {
     return (
-      <ScreenContainer
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 24,
-          backgroundColor: colors.background,
-        }}
-      >
+      <ScreenContainer style={styles.center}>
         <Text style={{ color: colors.foreground, fontSize: 18 }}>
           Meddelandet hittades inte.
         </Text>
@@ -99,16 +91,14 @@ export default function TemplateScreen() {
 
   return (
     <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
+      {/* HEADER */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
-        >
+        <Pressable onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
         </Pressable>
 
         <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={2}>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>
             {scenario.title}
           </Text>
           <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
@@ -120,13 +110,12 @@ export default function TemplateScreen() {
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
-        keyboardVerticalOffset={0}
       >
         <ScrollView
           contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
+          {/* POLA */}
           {placeholders.length > 0 && (
             <View style={styles.fieldsSection}>
               <Text style={[styles.sectionLabel, { color: colors.muted }]}>
@@ -151,14 +140,13 @@ export default function TemplateScreen() {
                     placeholderTextColor={colors.muted}
                     value={values[ph.key] || ""}
                     onChangeText={(text) => updateValue(ph.key, text)}
-                    returnKeyType="done"
-                    autoCorrect={false}
                   />
                 </View>
               ))}
             </View>
           )}
 
+          {/* PODGLĄD */}
           <View style={styles.messageSection}>
             <Text style={[styles.sectionLabel, { color: colors.muted }]}>
               Förhandsgranskning
@@ -173,50 +161,52 @@ export default function TemplateScreen() {
                 },
               ]}
             >
-              <Text style={[styles.messageText, { color: colors.foreground }]} selectable>
+              <Text style={[styles.messageText, { color: colors.foreground }]}>
                 {filledTemplate}
               </Text>
             </View>
           </View>
-        </ScrollView>
 
-        <View style={[styles.bottomBar, { borderTopColor: colors.border }]}>
-          <View style={styles.buttonContainer}>
-            <Pressable
-              onPress={handleCopy}
-              style={({ pressed }) => [
-                styles.actionButton,
-                {
-                  backgroundColor: copied ? colors.success : colors.primary,
-                },
-                pressed && { transform: [{ scale: 0.97 }], opacity: 0.9 },
-              ]}
-            >
-              <MaterialIcons
-                name={copied ? "check" : "content-copy"}
-                size={20}
-                color="#FFFFFF"
-              />
-              <Text style={styles.buttonText}>{copied ? "Kopierat!" : "Kopiera"}</Text>
-            </Pressable>
-          </View>
-        </View>
+          {/* PRZYCISK KOPIUJ — TERAZ WIDOCZNY */}
+          <Pressable
+            onPress={handleCopy}
+            style={({ pressed }) => [
+              styles.actionButton,
+              {
+                backgroundColor: copied ? colors.success : colors.primary,
+              },
+              pressed && { opacity: 0.9, transform: [{ scale: 0.97 }] },
+            ]}
+          >
+            <MaterialIcons
+              name={copied ? "check" : "content-copy"}
+              size={20}
+              color="#fff"
+            />
+            <Text style={styles.buttonText}>
+              {copied ? "Kopierat!" : "Kopiera"}
+            </Text>
+          </Pressable>
+        </ScrollView>
       </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
+  center: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#fff",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 0.5,
+    padding: 16,
     gap: 12,
-  },
-  backButton: {
-    padding: 4,
+    borderBottomWidth: 0.5,
   },
   headerTextContainer: {
     flex: 1,
@@ -224,15 +214,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "700",
-    lineHeight: 24,
   },
   headerSubtitle: {
     fontSize: 13,
-    marginTop: 2,
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 100,
+    paddingBottom: 40,
   },
   fieldsSection: {
     marginBottom: 20,
@@ -240,8 +228,6 @@ const styles = StyleSheet.create({
   sectionLabel: {
     fontSize: 13,
     fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
     marginBottom: 10,
   },
   fieldRow: {
@@ -249,18 +235,16 @@ const styles = StyleSheet.create({
   },
   fieldLabel: {
     fontSize: 14,
-    fontWeight: "500",
     marginBottom: 6,
   },
   fieldInput: {
     borderWidth: 1,
     borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    padding: 12,
     fontSize: 16,
   },
   messageSection: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   messageBox: {
     borderWidth: 1,
@@ -272,28 +256,17 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
   },
-  bottomBar: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingBottom: 20,
-    borderTopWidth: 0.5,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    gap: 10,
-  },
   actionButton: {
-    flex: 1,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "center",
     gap: 8,
-    paddingVertical: 14,
+    padding: 14,
     borderRadius: 10,
   },
   buttonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
+    color: "#fff",
     fontWeight: "600",
+    fontSize: 14,
   },
 });
