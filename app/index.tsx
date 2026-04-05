@@ -1,8 +1,8 @@
-Import { useRouter } from „expo-router”;
-Import MaterialIcons from „@expo/vector-icons/MaterialIcons”;
-Import * as Haptics from „expo-haptics”;
-Import { categories } from „@/data/scenarios”;
-Import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from „react-native”;
+import { useRouter } from "expo-router";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Haptics from "expo-haptics";
+import { categories } from "@/data/scenarios";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 Const ScreenContainer = View;
 
