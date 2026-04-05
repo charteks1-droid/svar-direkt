@@ -1,293 +1,278 @@
-import { useState, useCallback, useMemo } from "react";
-import {
-  Text,
-  View,
-  ScrollView,
-  TextInput,
-  StyleSheet,
-  Pressable,
-  Platform,
-  KeyboardAvoidingView,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { categories } from "@/data/scenarios";
-import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
+import { categories } from "@/data/scenarios";
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 const ScreenContainer = View;
 
 const colors = {
   primary: "#2563eb",
-  background: "#ffffff",
-  foreground: "#111111",
-  muted: "#666666",
-  border: "#e5e5e5",
-  surface: "#f5f5f5",
-  success: "#16a34a",
+  primarySoft: "#dbeafe",
+  background: "#f8fafc",
+  foreground: "#0f172a",
+  muted: "#64748b",
+  border: "#e2e8f0",
+  surface: "#ffffff",
 };
 
-export default function TemplateScreen() {
-  const { categoryId, scenarioId } = useLocalSearchParams<{
-    categoryId: string;
-    scenarioId: string;
-  }>();
-
+export default function HomeScreen() {
   const router = useRouter();
 
-  const category = categories.find((c) => c.id === categoryId);
-  const scenario = category?.scenarios.find((s) => s.id === scenarioId);
-
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [copied, setCopied] = useState(false);
-
-  const updateValue = useCallback((key: string, value: string) => {
-    setValues((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const filledTemplate = useMemo(() => {
-    if (!scenario) return "";
-
-    if ("template" in scenario && Array.isArray((scenario as any).placeholders)) {
-      let text = (scenario as any).template ?? "";
-      for (const ph of (scenario as any).placeholders) {
-        const val = values[ph.key]?.trim();
-        const replacement = val || `[${ph.key}]`;
-        text = text.replace(new RegExp(`\\[${ph.key}\\]`, "g"), replacement);
-      }
-      return text;
+  const handleCategoryPress = (categoryId: string) => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-
-    return (scenario as any).content ?? "";
-  }, [scenario, values]);
-
-  const placeholders =
-    scenario && "placeholders" in scenario && Array.isArray((scenario as any).placeholders)
-      ? (scenario as any).placeholders
-      : [];
-
-  const handleCopy = async () => {
-    try {
-      await Clipboard.setStringAsync(filledTemplate);
-      if (Platform.OS !== "web") {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (e) {
-      console.error("Failed to copy:", e);
-    }
+    router.push({ pathname: "/situations", params: { categoryId } });
   };
-
-  if (!scenario || !category) {
-    return (
-      <ScreenContainer style={styles.center}>
-        <Text style={{ color: colors.foreground, fontSize: 18 }}>
-          Meddelandet hittades inte.
-        </Text>
-      </ScreenContainer>
-    );
-  }
 
   return (
     <ScreenContainer style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Pressable
-          onPress={() => router.back()}
-          style={({ pressed }) => [styles.backButton, pressed && { opacity: 0.6 }]}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View
+          style={[
+            styles.heroCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
-        </Pressable>
+          <View style={styles.heroTopRow}>
+            <View style={[styles.heroIconWrap, { backgroundColor: colors.primarySoft }]}>
+              <MaterialIcons name="chat-bubble-outline" size={28} color={colors.primary} />
+            </View>
+          </View>
 
-        <View style={styles.headerTextContainer}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]} numberOfLines={2}>
-            {scenario.title}
-          </Text>
-          <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
-            {category.title}
+          <Text style={[styles.heroTitle, { color: colors.foreground }]}>Svar Direkt</Text>
+
+          <Text style={[styles.heroSubtitle, { color: colors.muted }]}>
+            Klara och tydliga meddelanden för vanliga situationer i Sverige.
           </Text>
         </View>
-      </View>
 
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <View
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
         >
-          {placeholders.length > 0 && (
-            <View style={styles.fieldsSection}>
-              <Text style={[styles.sectionLabel, { color: colors.muted }]}>
-                Fyll i dina uppgifter
-              </Text>
-
-              {placeholders.map((ph: any) => (
-                <View key={ph.key} style={styles.fieldRow}>
-                  <Text style={[styles.fieldLabel, { color: colors.foreground }]}>
-                    {ph.label}
-                  </Text>
-                  <TextInput
-                    style={[
-                      styles.fieldInput,
-                      {
-                        backgroundColor: colors.surface,
-                        borderColor: colors.border,
-                        color: colors.foreground,
-                      },
-                    ]}
-                    placeholder={ph.label}
-                    placeholderTextColor={colors.muted}
-                    value={values[ph.key] || ""}
-                    onChangeText={(text) => updateValue(ph.key, text)}
-                    returnKeyType="done"
-                    autoCorrect={false}
-                  />
-                </View>
-              ))}
+          <View style={styles.infoHeader}>
+            <View style={[styles.infoIconWrap, { backgroundColor: colors.primarySoft }]}>
+              <MaterialIcons name="info-outline" size={16} color={colors.primary} />
             </View>
-          )}
-
-          <View style={styles.messageSection}>
-            <Text style={[styles.sectionLabel, { color: colors.muted }]}>
-              Förhandsgranskning
+            <Text style={[styles.infoTitle, { color: colors.foreground }]}>
+              Viktig information
             </Text>
+          </View>
 
-            <View
-              style={[
-                styles.messageBox,
+          <Text style={[styles.infoText, { color: colors.muted }]}>
+            Denna app ger exempel på meddelanden och formuleringar för olika situationer.
+            Den erbjuder inte juridisk rådgivning och ersätter inte kontakt med myndighet,
+            jurist eller annan professionell rådgivare.
+          </Text>
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Myndigheter</Text>
+          <Text style={[styles.sectionSubtitle, { color: colors.muted }]}>Välj kategori</Text>
+        </View>
+
+        <View style={styles.cardList}>
+          {categories.map((category) => (
+            <Pressable
+              key={category.id}
+              onPress={() => handleCategoryPress(category.id)}
+              style={({ pressed }) => [
+                styles.card,
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
                 },
+                pressed && styles.cardPressed,
               ]}
             >
-              <Text style={[styles.messageText, { color: colors.foreground }]} selectable>
-                {filledTemplate}
-              </Text>
-            </View>
-          </View>
-        </ScrollView>
+              <View
+                style={[
+                  styles.iconContainer,
+                  {
+                    backgroundColor: colors.primarySoft,
+                  },
+                ]}
+              >
+                <MaterialIcons name={category.icon as any} size={22} color={colors.primary} />
+              </View>
 
-        <View style={[styles.copyBar, { borderTopColor: colors.border, backgroundColor: colors.background }]}>
-          <Pressable
-            onPress={handleCopy}
-            style={({ pressed }) => [
-              styles.copyButton,
-              {
-                backgroundColor: copied ? colors.success : colors.primary,
-              },
-              pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
-            ]}
-          >
-            <MaterialIcons
-              name={copied ? "check" : "content-copy"}
-              size={20}
-              color="#ffffff"
-            />
-            <Text style={styles.copyButtonText}>
-              {copied ? "Kopierat!" : "Kopiera"}
-            </Text>
-          </Pressable>
+              <View style={styles.cardContent}>
+                <Text style={[styles.cardTitle, { color: colors.foreground }]} numberOfLines={1}>
+                  {category.title}
+                </Text>
+
+                <Text style={[styles.cardSubtitle, { color: colors.muted }]} numberOfLines={1}>
+                  {category.subtitle}
+                </Text>
+
+                <Text style={[styles.cardCount, { color: colors.muted }]}>
+                  {category.scenarios.length} färdiga svar
+                </Text>
+              </View>
+
+              <View style={[styles.chevronWrap, { backgroundColor: "#f8fafc" }]}>
+                <MaterialIcons name="chevron-right" size={18} color={colors.muted} />
+              </View>
+            </Pressable>
+          ))}
         </View>
-      </KeyboardAvoidingView>
+
+        <View style={styles.footer}>
+          <Text style={[styles.footerText, { color: colors.muted }]}>
+            Kopiera och skicka professionella svar.
+          </Text>
+          <Text style={[styles.footerText, { color: colors.muted }]}>
+            Ingen inloggning krävs.
+          </Text>
+        </View>
+      </ScrollView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  center: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#ffffff",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: 0.5,
-    gap: 12,
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    lineHeight: 24,
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    marginTop: 2,
-  },
   scrollContent: {
-    padding: 16,
-    paddingBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 16,
+    paddingBottom: 28,
   },
-  fieldsSection: {
-    marginBottom: 20,
-  },
-  sectionLabel: {
-    fontSize: 13,
-    fontWeight: "600",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 10,
-  },
-  fieldRow: {
-    marginBottom: 12,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: "500",
-    marginBottom: 6,
-  },
-  fieldInput: {
+  heroCard: {
+    borderRadius: 22,
+    padding: 20,
+    marginBottom: 14,
     borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 16,
   },
-  messageSection: {
+  heroTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
-  messageBox: {
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 16,
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 24,
-    fontFamily: Platform.OS === "ios" ? "Menlo" : "monospace",
-  },
-  copyBar: {
-    borderTopWidth: 0.5,
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 20,
-  },
-  copyButton: {
-    flexDirection: "row",
+  heroIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
   },
-  copyButtonText: {
-    color: "#ffffff",
+  heroTitle: {
+    fontSize: 30,
+    fontWeight: "800",
+    marginBottom: 8,
+    letterSpacing: -0.6,
+  },
+  heroSubtitle: {
+    fontSize: 14,
+    lineHeight: 21,
+    maxWidth: "92%",
+  },
+  infoCard: {
+    borderWidth: 1,
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 20,
+  },
+  infoHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 10,
+  },
+  infoIconWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  infoTitle: {
     fontSize: 15,
     fontWeight: "700",
+  },
+  infoText: {
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  sectionHeader: {
+    marginBottom: 12,
+    paddingHorizontal: 2,
+  },
+  sectionTitle: {
+    fontSize: 19,
+    fontWeight: "700",
+    marginBottom: 2,
+    letterSpacing: -0.3,
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+  },
+  cardList: {
+    gap: 10,
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 14,
+  },
+  cardPressed: {
+    transform: [{ scale: 0.985 }],
+    opacity: 0.94,
+  },
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  cardContent: {
+    flex: 1,
+    minWidth: 0,
+    paddingRight: 8,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 3,
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  cardCount: {
+    fontSize: 11,
+  },
+  chevronWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footer: {
+    alignItems: "center",
+    marginTop: 24,
+    paddingTop: 10,
+    paddingBottom: 8,
+  },
+  footerText: {
+    fontSize: 12,
+    lineHeight: 18,
+    textAlign: "center",
   },
 });
